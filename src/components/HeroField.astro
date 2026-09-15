@@ -1,0 +1,15 @@
+---
+/**
+ * The three background layers of the hero. Order matters: the colour wash sits
+ * furthest back, then the measurement grid, then the live particle field. All
+ * three are `pointer-events: none` and `aria-hidden` — they are atmosphere.
+ */
+---
+
+<div class="hero-glow" aria-hidden="true"></div>
+<div class="hero-grid" aria-hidden="true"></div>
+<canvas class="hero-canvas" aria-hidden="true" data-hero-field></canvas>
+
+<script>
+  import '../scripts/hero';
+</script>

@@ -1,0 +1,58 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  schema?: Record<string, unknown>;
+  ogRoute?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  /** Home page: the hero needs to run edge to edge under the header. */
+  bleed?: boolean;
+  class?: string;
+}
+
+const { bleed = false, class: className, ...head } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead {...head} />
+    <ClientRouter />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+
+    <Header />
+
+    {/* `tabindex="-1"` is what lets the skip link move focus here. Without it
+        the hash change scrolls the viewport but focus stays on <body>, so
+        screen-reader users get no announcement and the link does not really
+        skip anything. It is not in the tab order — only a programmatic or
+        fragment target. */}
+    <main
+      id="main"
+      tabindex="-1"
+      class:list={[!bleed && 'shell', className]}
+      transition:name="main-content"
+    >
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script>
+      import '../scripts/navigation-watchdog';
+      import '../scripts/reveal';
+      import '../scripts/spotlight';
+    </script>
+  </body>
+</html>

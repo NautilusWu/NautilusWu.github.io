@@ -1,0 +1,1542 @@
+/* ==========================================================================
+   Components
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: color-mix(in oklab, var(--bg) 78%, transparent);
+  /* Blur radius kept modest and the saturate() dropped: this is re-computed
+     on every scroll frame, and a wide radius over a full-width sticky bar is
+     one of the few things on this page that can cost a weak GPU real time.
+
+     No `-webkit-backdrop-filter` companion here, or anywhere else in this
+     file. Declaring both by hand does not work: the build's CSS pipeline
+     treats the pair as one logical property and keeps whichever is declared
+     last, which silently dropped the unprefixed form from the output — and
+     Firefox has only ever supported the unprefixed spelling. Unprefixed alone
+     covers Chrome 76+, Firefox 103+, and Safari 15.4+; older Safari keeps the
+     translucent background and just misses the blur, which is a degradation
+     nobody will notice. The translucency itself is the `background` above, so
+     the text stays legible either way. */
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--dur-2) var(--ease),
+    background var(--dur-2) var(--ease);
+}
+
+/* The rule only appears once you've actually scrolled — at rest the header
+   dissolves into the hero. */
+.site-header[data-stuck] {
+  border-bottom-color: var(--hair);
+  background: color-mix(in oklab, var(--bg) 88%, transparent);
+}
+
+.header-inner {
+  min-height: 4.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+}
+
+/* — Scroll progress: a 2px accent line welded to the header's bottom edge.
+     Driven by a scroll-linked animation where supported, by rAF otherwise. — */
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--progress, 0));
+  background: linear-gradient(to right, var(--accent), var(--warm));
+  pointer-events: none;
+}
+
+/* Longhands, not the `animation` shorthand, and this is not a style choice.
+   `animation-timeline` is not a component of the shorthand — the shorthand
+   only *resets* it — but the CSS minifier folded
+   `animation: progress-grow linear both` plus `animation-timeline: scroll(...)`
+   into a single `animation: linear both progress-grow scroll(root)`. That
+   declaration is invalid, so the browser dropped all of it and the bar never
+   animated in a production build, while working fine unminified. Longhands
+   survive. Verify against `dist/`, not this file.
+
+   `animation-duration: auto` is what makes the animation span the whole scroll
+   range; a real duration would finish it in the first few pixels. */
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation-name: progress-grow;
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root block);
+  }
+
+  @keyframes progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* — Brand — */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand:hover {
+  color: inherit;
+}
+
+.monogram {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hair-3);
+  border-radius: 50%;
+  font-family: var(--face-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fg-2);
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    border-color var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease);
+}
+
+/* A second ring that scales out like a detector pulse on hover. */
+.monogram::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.7);
+  transition:
+    opacity var(--dur-3) var(--ease),
+    transform var(--dur-3) var(--ease);
+}
+
+.brand:hover .monogram {
+  transform: rotate(-14deg);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+.brand:hover .monogram::after {
+  opacity: 1;
+  transform: scale(1.32);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-name {
+  font-family: var(--face-display);
+  font-size: 1.02rem;
+  letter-spacing: -0.015em;
+}
+
+.brand-role {
+  font-family: var(--face-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--fg-4);
+}
+
+/* — Primary nav — */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+/* The sliding indicator. JS writes --nav-x/--nav-w from the active link's
+   box; with no JS the active link still gets its own underline below. */
+.nav-links {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.nav-links::after {
+  content: '';
+  position: absolute;
+  bottom: 0.1rem;
+  left: 0;
+  height: 1.5px;
+  width: var(--nav-w, 0px);
+  transform: translateX(var(--nav-x, 0px));
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: var(--nav-o, 0);
+  transition:
+    transform var(--dur-3) var(--ease),
+    width var(--dur-3) var(--ease),
+    opacity var(--dur-2) var(--ease);
+}
+
+.nav-link {
+  position: relative;
+  padding: 0.5rem 0.7rem;
+  font-size: var(--step--1);
+  color: var(--fg-3);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-1) var(--ease);
+}
+
+.nav-link:hover {
+  color: var(--fg);
+}
+
+.nav-link[aria-current='page'] {
+  color: var(--fg);
+}
+
+/* No-JS / pre-hydration fallback for the indicator. */
+.nav-links:not([data-ready]) .nav-link[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  inset: auto 0.7rem 0.1rem;
+  height: 1.5px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.nav-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.5rem;
+  padding-left: 0.65rem;
+  border-left: 1px solid var(--hair);
+}
+
+.icon-btn {
+  position: relative;
+  width: 2.15rem;
+  height: 2.15rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--fg-3);
+  cursor: pointer;
+  transition:
+    color var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    background var(--dur-1) var(--ease);
+}
+
+.icon-btn:hover {
+  color: var(--fg);
+  border-color: var(--hair-2);
+  background: var(--surface-2);
+}
+
+.icon-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* The theme icons cross-fade and counter-rotate. */
+.icon-btn .icon-swap {
+  position: absolute;
+  transition:
+    opacity var(--dur-2) var(--ease),
+    transform var(--dur-3) var(--ease);
+}
+
+.icon-sun {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+.icon-moon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+}
+
+:root[data-theme='dark'] .icon-sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.6);
+}
+:root[data-theme='dark'] .icon-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* — Mobile: the links collapse into a drawer — */
+
+.nav-toggle {
+  display: none;
+}
+
+@media (max-width: 46rem) {
+  .brand-role {
+    display: none;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: grid;
+  }
+
+  .nav-tools {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+/* — Overlay dialog ——————————————————————————————————————————
+   The drawer is a <dialog> opened with showModal(). `display`/`overlay` are
+   transitioned with `allow-discrete` and the entry state comes from
+   `@starting-style`, which is what makes a top-layer element animate in and
+   out at all. Browsers without those two features simply show and hide it,
+   which is a fine outcome. */
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  align-content: start;
+  padding: 5.5rem var(--gutter) var(--space-l);
+  background: color-mix(in oklab, var(--bg) 94%, transparent);
+  backdrop-filter: blur(18px);
+  color: var(--fg);
+  opacity: 0;
+  transition:
+    opacity var(--dur-2) var(--ease),
+    display var(--dur-2) allow-discrete,
+    overlay var(--dur-2) allow-discrete;
+}
+
+/* `display` lives here and nowhere else. A `dialog` is `display: none` while
+   closed by UA stylesheet, but an author rule setting `display` on the base
+   selector beats that — leaving a full-viewport, `opacity: 0`, still
+   hit-testable element over the whole page, swallowing every click. Declaring
+   it only for `[open]` is also what lets the `allow-discrete` transition
+   above animate in and out. */
+.drawer[open] {
+  display: grid;
+  opacity: 1;
+}
+
+@starting-style {
+  .drawer[open] {
+    opacity: 0;
+  }
+}
+
+.drawer::backdrop {
+  background: transparent;
+}
+
+.drawer-close {
+  position: absolute;
+  top: 1.15rem;
+  right: var(--gutter);
+}
+
+.drawer-link {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9em;
+  padding-block: 0.7em;
+  border-bottom: 1px solid var(--hair);
+  font-family: var(--face-display);
+  font-size: var(--step-2);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  color: var(--fg);
+  opacity: 0;
+  transform: translateY(0.6rem);
+  transition:
+    opacity var(--dur-3) var(--ease),
+    transform var(--dur-3) var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+
+.drawer[open] .drawer-link {
+  opacity: 1;
+  transform: none;
+}
+
+.drawer-link .drawer-index {
+  font-family: var(--face-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--fg-4);
+}
+
+.drawer-link[aria-current='page'] {
+  color: var(--accent);
+}
+
+.drawer-foot {
+  margin-top: var(--space-l);
+  display: grid;
+  gap: var(--space-s);
+  opacity: 0;
+  transform: translateY(0.6rem);
+  transition:
+    opacity var(--dur-3) var(--ease) 340ms,
+    transform var(--dur-3) var(--ease) 340ms;
+}
+
+.drawer[open] .drawer-foot {
+  opacity: 1;
+  transform: none;
+}
+
+.drawer-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-family: var(--face-mono);
+  font-size: var(--step--1);
+  color: var(--fg-2);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.drawer-mail svg {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  color: var(--accent);
+}
+
+.drawer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1.2em;
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.drawer-socials a {
+  color: var(--fg-4);
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(3.5rem, 9vw, 8rem) clamp(3rem, 6vw, 6rem);
+  overflow: clip;
+}
+
+/* Layer 1 — two very soft colour washes that drift. */
+.hero-glow {
+  position: absolute;
+  inset: -20% -10% auto;
+  height: 130%;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(46rem 30rem at 78% 18%, var(--glow-a), transparent 68%),
+    radial-gradient(34rem 26rem at 12% 72%, var(--glow-b), transparent 70%);
+  filter: blur(6px);
+  animation: glow-drift 26s var(--ease-in-out) infinite alternate;
+}
+
+@keyframes glow-drift {
+  from {
+    transform: translate3d(-1.5%, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5%, -2%, 0) scale(1.06);
+  }
+}
+
+/* Layer 2 — a hairline measurement grid, masked so it fades out. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--hair) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hair) 1px, transparent 1px);
+  background-size: 5.5rem 5.5rem;
+  mask-image: radial-gradient(95% 80% at 62% 6%, #000 0%, transparent 62%);
+  -webkit-mask-image: radial-gradient(95% 80% at 62% 6%, #000 0%, transparent 62%);
+  opacity: 0.55;
+}
+
+/* Layer 3 — the generative particle field. */
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: var(--canvas-opacity);
+  mask-image: radial-gradient(115% 100% at 68% 28%, #000 18%, transparent 80%);
+  -webkit-mask-image: radial-gradient(115% 100% at 68% 28%, #000 18%, transparent 80%);
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+@media (max-width: 62rem) {
+  .hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65em;
+  padding: 0.35em 0.9em 0.35em 0.7em;
+  margin: 0 0 var(--space-m);
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.status-dot {
+  position: relative;
+  width: 0.42em;
+  height: 0.42em;
+  flex: none;
+  border-radius: 50%;
+  background: var(--warm);
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -0.25em;
+  border-radius: 50%;
+  border: 1px solid var(--warm);
+  animation: ping 2.6s var(--ease-in-out) infinite;
+}
+
+@keyframes ping {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+/* The name is set as a two-line masthead: the given name recedes, the family
+   name carries the weight. Both in the display face so it reads as one word
+   mark rather than a label above a title. */
+.hero-name {
+  margin: 0 0 var(--space-s);
+  font-size: var(--step-6);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+
+.hero-name .given,
+.hero-name .family {
+  display: block;
+}
+
+.hero-name .given {
+  color: var(--fg-4);
+}
+
+.hero-name .family {
+  position: relative;
+  width: fit-content;
+  color: var(--fg);
+}
+
+/* A hairline that draws itself under the family name once it lands. */
+.hero-name .family::after {
+  content: '';
+  position: absolute;
+  left: 0.06em;
+  right: 0.06em;
+  bottom: 0.06em;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 900ms var(--ease) 420ms;
+}
+
+.js .hero-name .family.is-in::after,
+html:not(.js) .hero-name .family::after {
+  transform: scaleX(1);
+}
+
+.hero-tagline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em 0.85em;
+  margin: 0 0 var(--space-m);
+  font-family: var(--face-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+}
+
+.hero-tagline .sep {
+  width: 1.1rem;
+  height: 1px;
+  background: var(--hair-3);
+}
+
+.hero-copy {
+  color: var(--fg-2);
+  max-width: 54ch;
+}
+
+.hero-copy p + p {
+  margin-top: 0.9em;
+}
+
+/* Drop-cap-ish opening: the first line of the first paragraph gets a little
+   more presence without shouting. */
+.hero-copy > p:first-child {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  letter-spacing: -0.012em;
+  color: var(--fg);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: var(--space-m);
+}
+
+/* — The readout panel: an instrument-style key/value block — */
+
+.readout {
+  position: relative;
+  padding: var(--space-s);
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-1);
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+}
+
+.readout-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75em;
+  margin-bottom: 0.25em;
+  border-bottom: 1px solid var(--hair);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-4);
+}
+
+.readout-row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.9em;
+  padding-block: 0.62em;
+  border-bottom: 1px dashed var(--hair);
+}
+
+.readout-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0.1em;
+}
+
+.readout-key {
+  color: var(--fg-4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.readout-val {
+  color: var(--fg-2);
+  overflow-wrap: anywhere;
+}
+
+.readout-val a {
+  text-decoration-color: var(--hair-2);
+}
+
+.readout-bars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 0.7rem;
+}
+
+/* Full height, scaled down — `transform` is composited, whereas animating
+   `height` would put five elements through layout and paint on every frame for
+   as long as the page is open. */
+.readout-bars i {
+  width: 2px;
+  height: 100%;
+  transform-origin: bottom;
+  background: var(--accent);
+  opacity: 0.55;
+  animation: bar-pulse 1.6s var(--ease-in-out) infinite alternate;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes bar-pulse {
+  from {
+    transform: scaleY(0.22);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--fg);
+  --btn-edge: var(--hair-3);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.62em 1.15em;
+  border: 1px solid var(--btn-edge);
+  border-radius: var(--radius-pill);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-size: var(--step--1);
+  font-weight: 480;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform var(--dur-2) var(--ease),
+    border-color var(--dur-2) var(--ease),
+    color var(--dur-2) var(--ease),
+    background var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  color: var(--btn-fg);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn svg {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+  transition: transform var(--dur-2) var(--ease);
+}
+
+.btn:hover .icon-arrow {
+  transform: translateX(0.2em);
+}
+
+.btn-primary {
+  --btn-bg: var(--fg);
+  --btn-fg: var(--bg);
+  --btn-edge: var(--fg);
+  box-shadow: var(--shadow-1);
+}
+
+.btn-primary:hover {
+  --btn-bg: var(--accent);
+  --btn-edge: var(--accent);
+  --btn-fg: var(--accent-fg);
+  box-shadow: var(--shadow-2);
+}
+
+/* A single specular sweep across the primary button on hover. */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in oklab, var(--bg) 55%, transparent) 45%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform var(--dur-4) var(--ease);
+}
+
+.btn-primary:hover::after {
+  transform: translateX(120%);
+}
+
+.btn-quiet {
+  --btn-edge: var(--hair);
+  color: var(--fg-2);
+}
+
+.btn-quiet:hover {
+  --btn-edge: var(--accent-line);
+  color: var(--accent);
+}
+
+.btn-sm {
+  padding: 0.45em 0.9em;
+  font-size: var(--step--2);
+}
+
+/* A text link that behaves like a button target: arrow + growing rule. */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--step--1);
+  text-decoration: none;
+  color: var(--fg-2);
+}
+
+.link-arrow::after {
+  content: '';
+  width: 1.1rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.45;
+  transition:
+    width var(--dur-2) var(--ease),
+    opacity var(--dur-2) var(--ease);
+}
+
+.link-arrow:hover {
+  color: var(--accent);
+}
+
+.link-arrow:hover::after {
+  width: 2rem;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Cards
+   -------------------------------------------------------------------------- */
+
+.card {
+  --spot: transparent;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.1rem, 2vw, 1.6rem);
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  isolation: isolate;
+  overflow: hidden;
+  transition:
+    transform var(--dur-3) var(--ease),
+    border-color var(--dur-2) var(--ease),
+    box-shadow var(--dur-3) var(--ease);
+}
+
+/* Pointer-tracked spotlight. A single delegated listener on the grid writes
+   --mx/--my (see `spotlight.ts`), so this costs one composited gradient. */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    16rem 16rem at var(--mx, 50%) var(--my, 0%),
+    var(--accent-soft),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--hair-2);
+  box-shadow: var(--shadow-pop);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* Fiducial corner marks — the little registration crosses you see on a
+   printed plate. They draw themselves in on hover. */
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-top: 1px solid var(--accent);
+  border-right: 1px solid var(--accent);
+  opacity: 0;
+  transform: translate(-0.25rem, 0.25rem);
+  transition:
+    opacity var(--dur-2) var(--ease),
+    transform var(--dur-3) var(--ease);
+}
+
+.card:hover::after {
+  opacity: 0.7;
+  transform: none;
+}
+
+.card-index {
+  display: block;
+  margin-bottom: 0.9em;
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-4);
+}
+
+.card h3 {
+  margin-bottom: 0.4em;
+}
+
+.card p {
+  color: var(--fg-2);
+  font-size: var(--step--1);
+  line-height: 1.6;
+}
+
+.card-foot {
+  margin-top: auto;
+  padding-top: var(--space-s);
+}
+
+/* A card that is entirely one link: the whole surface is the hit area. */
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link:hover {
+  color: inherit;
+}
+
+.card-link h3 {
+  transition: color var(--dur-1) var(--ease);
+}
+
+.card-link:hover h3 {
+  color: var(--accent);
+}
+
+.card-link:focus-visible {
+  outline-offset: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Tags
+   -------------------------------------------------------------------------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tag {
+  padding: 0.18em 0.62em;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--surface-2) 70%, transparent);
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  color: var(--fg-3);
+  white-space: nowrap;
+  transition:
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.tags:hover .tag {
+  border-color: var(--hair-2);
+}
+
+.tag-accent {
+  border-color: var(--accent-line);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Entries — the shared record layout for research, projects, and the CV
+   -------------------------------------------------------------------------- */
+
+.entries {
+  position: relative;
+  display: grid;
+}
+
+/* The rule the entry dots sit on. Faded at both ends so it reads as a
+   timeline rather than a border. */
+@media (min-width: 52.001rem) {
+  .entries::before {
+    content: '';
+    position: absolute;
+    top: 0.4rem;
+    bottom: 1.5rem;
+    left: calc(-1.35rem + 2px);
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--hair) 8%,
+      var(--hair) 88%,
+      transparent
+    );
+  }
+}
+
+.entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: var(--space-s) var(--space-l);
+  padding-block: clamp(1.5rem, 3vw, 2.4rem);
+  border-top: 1px solid var(--hair);
+}
+
+.entry:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* A dot on the timeline rule, lit on hover. */
+.entry::before {
+  content: '';
+  position: absolute;
+  top: clamp(1.5rem, 3vw, 2.4rem);
+  left: -1.35rem;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hair-3);
+  transition:
+    background var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-2) var(--ease);
+}
+
+.entry:hover::before {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  transform: scale(1.2);
+}
+
+.entry-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.04em;
+  color: var(--fg-4);
+  line-height: 1.6;
+}
+
+.entry-period {
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.entry-org {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.entry-body > h3 {
+  margin-bottom: 0.25em;
+}
+
+.entry-role {
+  margin: 0 0 0.75em;
+  font-size: var(--step--1);
+  color: var(--fg-3);
+}
+
+.entry-summary {
+  color: var(--fg-2);
+  margin-bottom: 0.9em;
+}
+
+.entry-body ul {
+  margin-bottom: 1em;
+  color: var(--fg-2);
+  font-size: var(--step--1);
+  line-height: 1.6;
+}
+
+.entry-body ul li::marker {
+  color: var(--accent);
+}
+
+@media (max-width: 52rem) {
+  .entry {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .entry::before {
+    display: none;
+  }
+
+  .entry-meta {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75em;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Definition rows — skills, contact, awards
+   -------------------------------------------------------------------------- */
+
+.deflist {
+  display: grid;
+}
+
+.defrow {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 0.4rem var(--space-l);
+  padding-block: 0.85rem;
+  border-top: 1px solid var(--hair);
+  align-items: baseline;
+  transition: background var(--dur-2) var(--ease);
+}
+
+.defrow:first-child {
+  border-top: 0;
+}
+
+.defkey {
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.defval {
+  color: var(--fg-2);
+}
+
+@media (max-width: 52rem) {
+  .defrow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Marquee — a slow ticker of the toolchain
+   -------------------------------------------------------------------------- */
+
+.marquee {
+  position: relative;
+  overflow: hidden;
+  padding-block: 0.9rem;
+  border-block: 1px solid var(--hair);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 2.5rem;
+  animation: marquee 46s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-4);
+  white-space: nowrap;
+}
+
+.marquee-item::after {
+  content: '';
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.5;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* The track holds two identical copies; -50% is one seamless lap. */
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.site-footer {
+  border-top: 1px solid var(--hair);
+  background: var(--bg-sunk);
+  padding-block: var(--space-xl) var(--space-l);
+  font-size: var(--step--1);
+  color: var(--fg-3);
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+  gap: var(--space-m) var(--space-l);
+  padding-bottom: var(--space-l);
+}
+
+.footer-sig {
+  font-family: var(--face-display);
+  font-size: var(--step-2);
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin-bottom: 0.4em;
+}
+
+/* `h2`, not `h4`: these label the footer's two link lists, and as `h4` they
+   skipped a level after the last `h2` in the page body — a broken outline for
+   anyone navigating by headings. The size here is purely visual. */
+.footer-col h2 {
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-4);
+  margin-bottom: 0.9em;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.45em;
+}
+
+.footer-col a {
+  text-decoration: none;
+  color: var(--fg-3);
+}
+
+.footer-col a:hover {
+  color: var(--accent);
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-m);
+  padding-top: var(--space-s);
+  border-top: 1px solid var(--hair);
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  letter-spacing: 0.06em;
+  color: var(--fg-4);
+}
+
+.footer-bottom a {
+  text-decoration: none;
+}
+
+@media (max-width: 46rem) {
+  .footer-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Locks the page behind the mobile drawer without a layout jump. */
+body[data-scroll-locked] {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll reveal
+   -------------------------------------------------------------------------- */
+
+/* Gated on `.js` so that if the script never runs, nothing is ever hidden. */
+/* No `will-change` here on purpose. It would promote a compositor layer for
+   every pending element at once — 14 of them on the home page, each costing
+   width x height x 4 bytes of GPU memory — to buy nothing: `opacity` and
+   `transform` are already composited properties, and this is a one-shot
+   transition rather than a continuous animation. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition:
+    opacity var(--dur-4) var(--ease),
+    transform var(--dur-4) var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* A heading variant that wipes up from behind its own baseline. */
+.js [data-reveal='mask'] {
+  clip-path: inset(0 0 -0.3em 0);
+  transform: translateY(0.9em);
+  opacity: 1;
+  transition: transform var(--dur-4) var(--ease);
+}
+
+.js [data-reveal='mask'].is-in {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal],
+  .js [data-reveal='mask'] {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Code copy button (injected by scripts/prose.ts)
+   -------------------------------------------------------------------------- */
+
+.copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2em 0.6em;
+  border: 1px solid var(--hair-2);
+  border-radius: var(--radius-xs);
+  background: color-mix(in oklab, var(--surface) 85%, transparent);
+  backdrop-filter: blur(4px);
+  color: var(--fg-3);
+  font-family: var(--face-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--dur-2) var(--ease),
+    color var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+
+pre:hover .copy-btn,
+.copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.copy-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent-line);
+}
+
+/* --------------------------------------------------------------------------
+   View transitions
+   -------------------------------------------------------------------------- */
+
+/* Page-to-page: content lifts a few pixels while it crossfades. The header
+   and footer are marked `transition:persist` so they never take part. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(main-content) {
+    animation: content-out 180ms var(--ease-in-out) both;
+  }
+
+  ::view-transition-new(main-content) {
+    animation: content-in 320ms var(--ease) both;
+  }
+
+  @keyframes content-out {
+    to {
+      opacity: 0;
+      transform: translateY(-0.35rem);
+    }
+  }
+
+  @keyframes content-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.7rem);
+    }
+  }
+}
+
+/* Theme change: the new palette is revealed as a circle growing out of the
+   toggle. `--reveal-*` are written by scripts/theme.ts before the swap. */
+:root[data-theme-transition]::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  z-index: 0;
+}
+
+:root[data-theme-transition]::view-transition-new(root) {
+  animation: theme-reveal 620ms var(--ease) both;
+  mix-blend-mode: normal;
+  z-index: 1;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x, 50%) var(--reveal-y, 0));
+  }
+  to {
+    clip-path: circle(var(--reveal-r, 100vmax) at var(--reveal-x, 50%) var(--reveal-y, 0));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Note / callout used on the CV and 404
+   -------------------------------------------------------------------------- */
+
+.note {
+  display: flex;
+  gap: 0.8em;
+  padding: var(--space-s);
+  border: 1px solid var(--hair);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface-2);
+  font-size: var(--step--1);
+  color: var(--fg-2);
+}
+
+.note svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  margin-top: 0.15em;
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   404
+   -------------------------------------------------------------------------- */
+
+.notfound {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: var(--space-s);
+  padding-block: clamp(5rem, 16vh, 10rem);
+}
+
+.notfound-code {
+  font-family: var(--face-mono);
+  font-size: clamp(5rem, 20vw, 11rem);
+  font-weight: 500;
+  /* Tight leading plus negative margins: the glyphs' own ascent and descent
+     would otherwise open a hole either side of the numerals. */
+  line-height: 0.78;
+  margin-block: -0.08em -0.1em;
+  letter-spacing: -0.04em;
+  color: transparent;
+  background: linear-gradient(180deg, var(--fg) 10%, transparent 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  user-select: none;
+}

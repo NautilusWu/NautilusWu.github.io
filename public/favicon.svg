@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EW">
+  <style>
+    :root { color-scheme: light dark }
+    .ring { fill: none; stroke: #1b1d23; stroke-width: 2.5 }
+    .mark { fill: #1b1d23; font: 500 25px 'Iowan Old Style', Palatino, Georgia, serif }
+    .tick { stroke: #2f4a99; stroke-width: 2.5; stroke-linecap: round }
+    @media (prefers-color-scheme: dark) {
+      .ring { stroke: #e9ebf0 }
+      .mark { fill: #e9ebf0 }
+      .tick { stroke: #93aaf5 }
+    }
+  </style>
+  <circle class="ring" cx="32" cy="32" r="29" />
+  <!-- A single fiducial tick, matching the linework language of the site. -->
+  <path class="tick" d="M32 3v7" />
+  <text class="mark" x="32" y="41" text-anchor="middle">EW</text>
+</svg>

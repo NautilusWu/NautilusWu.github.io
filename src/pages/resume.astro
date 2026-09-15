@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import Entry from '../components/Entry.astro';
+import TagList from '../components/TagList.astro';
+import Icon from '../components/Icon.astro';
+import {
+  profile,
+  contact,
+  socials,
+  education,
+  research,
+  projects,
+  skills,
+  awards,
+} from '../data/site';
+import { publicFileExists } from '../lib/public-file';
+
+/* Only offer the download if the PDF is actually in `public/`. */
+const hasCv = publicFileExists(contact.cv);
+---
+
+<BaseLayout
+  title="CV"
+  description="Curriculum vitae of Edward Wu — education, research experience, projects, skills, and awards."
+>
+  <header class="page-head">
+    <p class="eyebrow" data-reveal>
+      Curriculum Vitae
+    </p>
+    <h1 data-reveal="mask" style="font-size:var(--step-5)">
+      {profile.name}
+    </h1>
+
+    <p class="lede" data-reveal>
+      {profile.discipline.join(' · ')}
+      <br />
+      {profile.affiliation} · {profile.location}
+    </p>
+
+    <div class="hero-actions no-print" data-reveal style="--reveal-delay:120ms">
+      {hasCv && (
+        <a class="btn btn-primary" href={contact.cv} download>
+          Download PDF
+          <Icon name="download" />
+        </a>
+      )}
+      <button class="btn" type="button" data-print>
+        <Icon name="printer" />
+        Print
+      </button>
+      <a class="btn btn-quiet" href={`mailto:${contact.email}`}>
+        <Icon name="mail" />
+        {contact.email}
+      </a>
+    </div>
+
+    <p class="note no-print" data-reveal style="margin-top:var(--space-m);max-width:52ch">
+      <Icon name="info" />
+      <span>
+        This page is the CV — it has its own print stylesheet, so <strong>Print</strong> produces a
+        clean document with no navigation, no colour, and no wasted margins.
+      </span>
+    </p>
+  </header>
+
+  <Section title="Contact" index="01" label="Reach me">
+    <div class="deflist">
+      {socials.map((social) => (
+        <div class="defrow" data-reveal>
+          <span class="defkey">{social.label}</span>
+          <span class="defval">
+            <a
+              href={social.href}
+              rel={social.href.startsWith('mailto:') ? 'me' : 'me noopener'}
+              target={social.href.startsWith('mailto:') ? undefined : '_blank'}
+            >
+              {social.handle}
+            </a>
+          </span>
+        </div>
+      ))}
+      <div class="defrow" data-reveal>
+        <span class="defkey">Location</span>
+        <span class="defval">{profile.location}</span>
+      </div>
+    </div>
+  </Section>
+
+  <Section title="Education" index="02" label="Training">
+    <div class="entries">
+      {education.map((item) => (
+        <Entry
+          title={item.school}
+          period={item.period}
+          org={item.location}
+          role={item.degree}
+          bullets={item.gpa ? [`GPA: ${item.gpa}`, ...item.details] : item.details}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <Section title="Research experience" index="03" label="Positions">
+    <div class="entries">
+      {research.map((item) => (
+        <Entry
+          title={item.title}
+          period={item.period}
+          org={item.org}
+          role={item.role}
+          bullets={item.bullets}
+          compact
+        />
+      ))}
+    </div>
+  </Section>
+
+  <Section title="Projects" index="04" label="Selected">
+    <div class="entries">
+      {projects.map((project) => (
+        <Entry
+          title={project.title}
+          period={project.period}
+          summary={project.summary}
+          tags={project.tags}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <Section title="Skills" index="05" label="Technical">
+    <div class="deflist">
+      {skills.map((group) => (
+        <div class="defrow" data-reveal>
+          <span class="defkey">{group.group}</span>
+          <span class="defval">
+            <TagList items={group.items} />
+          </span>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section title="Awards" index="06" label="Honours">
+    <div class="deflist">
+      {awards.map((award) => (
+        <div class="defrow" data-reveal>
+          <span class="defkey">{award.year}</span>
+          <span class="defval">
+            <strong style="font-weight:540;color:var(--fg)">{award.title}</strong>
+            <span style="color:var(--fg-4)"> — {award.org}</span>
+          </span>
+        </div>
+      ))}
+    </div>
+  </Section>
+</BaseLayout>
+
+<script>
+  // Scoped to this page, so it binds on `astro:page-load` like everything else.
+  document.addEventListener('astro:page-load', () => {
+    document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+  });
+</script>

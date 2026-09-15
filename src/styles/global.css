@@ -1,0 +1,21 @@
+/* ==========================================================================
+   global.css — the single stylesheet entry point
+   --------------------------------------------------------------------------
+   Layered deliberately, cheapest-to-reason-about first:
+
+     tokens      → custom properties only, no selectors that paint
+     base        → element defaults and the page ground
+     layout      → the shell, the section rail, grids
+     components  → every named UI piece
+     prose       → long-form article typography
+     print       → the CV's printed form
+
+   Vite inlines these at build time, so this costs one stylesheet.
+   ========================================================================== */
+
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './components.css';
+@import './prose.css';
+@import './print.css';

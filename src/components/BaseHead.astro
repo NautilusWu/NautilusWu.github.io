@@ -1,0 +1,120 @@
+---
+import { Font } from 'astro:assets';
+import { profile } from '../data/site';
+import { ogRouteFor, personSchema } from '../lib/seo';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Extra JSON-LD (e.g. BlogPosting) merged in alongside the Person graph. */
+  schema?: Record<string, unknown>;
+  /** Override the generated Open Graph image route. */
+  ogRoute?: string;
+  /** `article` for writing pages, `website` elsewhere. */
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = profile.description,
+  schema,
+  ogRoute,
+  ogType = 'website',
+  noindex = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} — ${profile.role}`;
+
+/* `Astro.site` is configured in astro.config.mjs; falling back to the request
+   origin keeps `astro dev` honest when it isn't set. */
+const base = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', base);
+const ogImage = new URL(`/og/${ogRoute ?? ogRouteFor(Astro.url.pathname)}.png`, base);
+const feed = new URL('/rss.xml', base);
+
+const graph = [personSchema(base.href), ...(schema ? [schema] : [])];
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={profile.name} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+{/* Self-hosted, latin-subset variable fonts with metric-matched fallbacks.
+    Only the body face is preloaded — the display and mono faces are used
+    below the fold often enough that preloading all three would compete with
+    the document itself. */}
+<Font cssVariable="--font-sans" preload />
+<Font cssVariable="--font-display" />
+<Font cssVariable="--font-mono" />
+
+{/* Mobile browser chrome matches the page background. These are the sRGB
+    values `--bg` actually resolves to in each theme, measured rather than
+    eyeballed — the dark one was #14171d, noticeably lighter than the real
+    background, which showed as a seam above the page. Keep in step with
+    `--bg` in tokens.css. */}
+<meta name="theme-color" content="#fcfbf8" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0d0f15" media="(prefers-color-scheme: dark)" />
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" sizes="32x32" href="/favicon.ico" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="alternate" type="application/rss+xml" title={`${profile.name} — Writing`} href={feed} />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={profile.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="en_US" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<meta name="generator" content={Astro.generator} />
+
+<script type="application/ld+json" set:html={JSON.stringify(graph)} is:inline></script>
+{/* The only blocking script on the site. It has to be blocking: the
+    alternative is one frame of the wrong theme for anyone who chose dark.
+    `.js` gates every reveal animation, so if this never runs, nothing on the
+    page is left stuck at `opacity: 0`. */}
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+
+    const apply = () => {
+      let stored = null;
+      try {
+        stored = localStorage.getItem('theme');
+      } catch {
+        // Private-mode reads can throw; fall back to the OS preference.
+      }
+      const dark = stored
+        ? stored === 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = dark ? 'dark' : 'light';
+      root.classList.add('js');
+    };
+
+    apply();
+
+    /* A view transition swaps in the incoming document's <html> attributes,
+       which drops both `data-theme` and the `js` class — the page would flash
+       to light and lose every reveal animation on each navigation.
+       `astro:after-swap` runs before the new page paints, so re-applying here
+       is invisible. */
+    document.addEventListener('astro:after-swap', apply);
+  })();
+</script>

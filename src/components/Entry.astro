@@ -1,0 +1,72 @@
+---
+import TagList from './TagList.astro';
+
+/**
+ * One record in a chronological list — a research position, a project, or a CV
+ * line. Research, projects, and the CV all render through this so the three
+ * pages stay visually identical where they are conceptually identical.
+ */
+interface Props {
+  title: string;
+  period: string;
+  org?: string;
+  role?: string;
+  summary?: string;
+  bullets?: readonly string[];
+  tags?: readonly string[];
+  href?: string;
+  /** Hide the summary/tags for the denser CV layout. */
+  compact?: boolean;
+}
+
+const {
+  title,
+  period,
+  org,
+  role,
+  summary,
+  bullets = [],
+  tags = [],
+  href,
+  compact = false,
+} = Astro.props;
+
+const external = Boolean(href && /^https?:/.test(href));
+---
+
+<article class="entry" data-reveal>
+  <div class="entry-meta">
+    <span class="entry-period">{period}</span>
+    {org && <span class="entry-org">{org}</span>}
+  </div>
+
+  <div class="entry-body">
+    <h3>
+      {href ? (
+        <a
+          href={href}
+          target={external ? '_blank' : undefined}
+          rel={external ? 'noopener noreferrer' : undefined}
+        >
+          {title}
+        </a>
+      ) : (
+        title
+      )}
+    </h3>
+
+    {role && <p class="entry-role">{role}</p>}
+    {summary && !compact && <p class="entry-summary">{summary}</p>}
+
+    {bullets.length > 0 && (
+      <ul>
+        {bullets.map((bullet) => (
+          <li>{bullet}</li>
+        ))}
+      </ul>
+    )}
+
+    {tags.length > 0 && !compact && <TagList items={tags} />}
+    <slot />
+  </div>
+</article>

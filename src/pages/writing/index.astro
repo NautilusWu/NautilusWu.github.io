@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Section from '../../components/Section.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import Icon from '../../components/Icon.astro';
+import { readingStats } from '../../lib/reading-time';
+
+const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+
+/* Counted from the raw body — rendering every post just to get a word count
+   would roughly double the cost of building this page. */
+const withMeta = posts.map((post) => ({
+  post,
+  readingTime: readingStats(post.body).minutes,
+}));
+
+const featured = withMeta.filter(({ post }) => post.data.featured);
+const rest = withMeta.filter(({ post }) => !post.data.featured);
+---
+
+<BaseLayout
+  title="Writing"
+  description="Notes on detector simulation, ML systems performance, and the occasional piece of web engineering."
+>
+  <PageHeader
+    eyebrow="Writing"
+    title="Notes from the middle of the problem"
+    lede="Working notes rather than finished essays: what I measured, what surprised me, and what I'd do differently."
+  >
+    <p data-reveal style="margin-top:var(--space-s); --reveal-delay:140ms">
+      <a class="link-arrow" href="/rss.xml">
+        <Icon name="rss" size="0.9em" />
+        Subscribe via RSS
+      </a>
+    </p>
+  </PageHeader>
+
+  {featured.length > 0 && (
+    <Section title="Featured" index="01" label="Start here">
+      <div class="grid grid-2" data-spotlight>
+        {featured.map(({ post, readingTime }) => (
+          <ArticleCard post={post} readingTime={readingTime} />
+        ))}
+      </div>
+    </Section>
+  )}
+
+  <Section
+    title={featured.length ? 'Everything else' : 'All posts'}
+    index={featured.length ? '02' : '01'}
+    label="Archive"
+  >
+    {rest.length > 0 ? (
+      <div class="grid grid-2" data-spotlight>
+        {rest.map(({ post, readingTime }) => (
+          <ArticleCard post={post} readingTime={readingTime} />
+        ))}
+      </div>
+    ) : (
+      <p class="note">
+        <Icon name="info" />
+        <span>Nothing else published yet — the featured posts above are the whole archive.</span>
+      </p>
+    )}
+  </Section>
+</BaseLayout>

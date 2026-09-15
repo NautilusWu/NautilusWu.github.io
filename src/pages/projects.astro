@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Section from '../components/Section.astro';
+import Entry from '../components/Entry.astro';
+import Icon from '../components/Icon.astro';
+import { projects } from '../data/site';
+
+const featured = projects.filter((project) => project.featured);
+const rest = projects.filter((project) => !project.featured);
+---
+
+<BaseLayout
+  title="Projects"
+  description="Engineering projects by Edward Wu — diffusion inference profiling, detector analysis tooling, and this website."
+>
+  <PageHeader
+    eyebrow="Projects"
+    title="Things I built to understand something"
+    lede="Most of these started as a question I couldn't answer by reading — so I wrote the code, measured it, and kept what held up."
+  />
+
+  <Section title="Selected work" index="01" label="Build log">
+    <div class="entries">
+      {featured.map((project) => (
+        <Entry
+          title={project.title}
+          period={project.period}
+          org="Project"
+          summary={project.summary}
+          bullets={project.bullets}
+          tags={project.tags}
+          href={project.href || undefined}
+        />
+      ))}
+    </div>
+  </Section>
+
+  {rest.length > 0 && (
+    <Section title="Also" index="02" label="Smaller">
+      <div class="entries">
+        {rest.map((project) => (
+          <Entry
+            title={project.title}
+            period={project.period}
+            org="Project"
+            summary={project.summary}
+            bullets={project.bullets}
+            tags={project.tags}
+            href={project.href || undefined}
+          />
+        ))}
+      </div>
+
+      <p class="note" data-reveal style="margin-top:var(--space-m)">
+        <Icon name="info" />
+        <span>
+          This site is itself one of the projects — the build notes are in{' '}
+          <a href="/writing/building-this-site">a post about how it's put together</a>.
+        </span>
+      </p>
+    </Section>
+  )}
+</BaseLayout>

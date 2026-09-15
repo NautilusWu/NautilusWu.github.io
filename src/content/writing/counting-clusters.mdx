@@ -1,0 +1,96 @@
+---
+title: Counting clusters, not charge
+description: Why primary ionization statistics separate pions from kaons better than energy loss does, and what the simulation has to get right.
+pubDate: 2026-06-02
+tags: ['Detectors', 'Simulation', 'Garfield++']
+featured: true
+---
+
+A charged particle crossing a gas volume leaves a trail of ionization
+clusters. The classical way to identify what the particle was is to measure
+the total charge deposited — d*E*/d*x* — and compare it to the Bethe–Bloch
+prediction for each hypothesis. It works. It also throws away most of the
+information in the trail.
+
+The alternative is to count the clusters themselves. The number of primary
+ionization events per unit length, d*N*/d*x*, is Poisson-distributed, while
+total charge is dominated by rare, enormous Landau tail events. A Poisson
+variable with a mean of a few tens has far better relative resolution than a
+Landau one.
+
+## Why the statistics favour counting
+
+For a straw tube a couple of centimetres across, a minimum-ionizing particle
+produces something like 20–30 primary clusters per centimetre depending on the
+gas. Over a metre-long track that is a few thousand countable events, and the
+relative resolution goes as 1/√*N*.
+
+Charge measurement, by contrast, is limited by the shape of the Landau
+distribution rather than by counting statistics. Adding track length helps,
+but it helps more slowly, because the tail never stops being the tail.
+
+The practical consequence: cluster counting keeps useful π/K separation to
+noticeably higher momentum than d*E*/d*x* does, in the region where the two
+Bethe–Bloch curves have converged to within a few percent and charge
+measurement has effectively given up.
+
+## What the simulation has to get right
+
+This is where it stops being a clean argument and starts being work. The
+separation power you predict is extremely sensitive to three things:
+
+1. **Primary cluster density for the actual gas mixture.** Not the tabulated
+   value for pure argon — the value for the 90/10 mixture at the pressure and
+   temperature you are actually running. This is what Garfield++ and Heed are
+   for, and it is worth validating against measured data before trusting a
+   parameter scan built on it.
+2. **Cluster-counting efficiency.** Two clusters arriving within the
+   electronics' resolving time are counted once. The efficiency is not a
+   constant; it depends on drift time, and therefore on where in the tube the
+   track passed.
+3. **Track length distribution.** Separation power quoted "per metre" is a
+   fiction if the real tracks have a spread of path lengths through the
+   detector. The honest figure of merit integrates over the geometry.
+
+Get the first one wrong and every curve shifts. Get the second one wrong and
+the curves shift _differently at different momenta_, which is worse, because
+the shape still looks plausible.
+
+## Making the scan reproducible
+
+A parameter scan that takes an afternoon to run is a parameter scan you will
+re-run wrong. The pipeline I settled on is a single declarative config that
+drives simulation, reconstruction, and plotting, so the whole chain regenerates
+from one file:
+
+```yaml
+gas:
+  mixture: { Ar: 0.90, CO2: 0.10 }
+  pressure_bar: 1.0
+  temperature_k: 293.15
+
+geometry:
+  tube_radius_mm: 5.0
+  wire_radius_um: 20.0
+
+scan:
+  momentum_gev: [0.5, 1.0, 2.0, 4.0, 8.0, 16.0]
+  track_length_m: [0.5, 1.0, 2.0]
+  counting_efficiency: [0.7, 0.85, 1.0]
+
+output:
+  figures: [separation_vs_p, cluster_density, efficiency_surface]
+```
+
+Every figure in my notes carries the hash of the config that produced it. It
+took an hour to add and has already saved me from presenting two
+inconsistent plots side by side.
+
+## Where this is going
+
+The current scan is mapping separation power across gas mixture, momentum, and
+counting efficiency to find where the design is actually
+efficiency-limited rather than statistics-limited. That distinction decides
+whether the next effort belongs in the gas or in the front-end electronics —
+which is a much more useful thing to know than another decimal place on a
+curve.

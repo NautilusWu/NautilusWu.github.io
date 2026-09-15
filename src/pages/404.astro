@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { nav } from '../data/site';
+---
+
+<BaseLayout title="Not found" description="This page does not exist." noindex>
+  <section class="notfound">
+    <p class="eyebrow eyebrow-plain">Error 404</p>
+    <p class="notfound-code" aria-hidden="true">
+      404
+    </p>
+
+    <h1 style="font-size:var(--step-4)">Nothing measured here</h1>
+
+    <p class="lede" style="margin:0 auto">
+      That page doesn't exist — the signal was below threshold. Try one of these instead.
+    </p>
+
+    <div class="hero-actions" style="justify-content:center">
+      <a class="btn btn-primary" href="/">
+        Home
+        <Icon name="arrow" class="icon-arrow" />
+      </a>
+      {nav.slice(1, 4).map((item) => (
+        <a class="btn btn-quiet" href={item.href}>
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

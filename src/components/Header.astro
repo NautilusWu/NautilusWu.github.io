@@ -1,0 +1,108 @@
+---
+import Icon from './Icon.astro';
+import { profile, nav, contact, socials } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+
+const initials = profile.name
+  .split(' ')
+  .map((part) => part[0])
+  .join('');
+---
+
+<header class="site-header no-print" data-header transition:persist transition:name="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="/" aria-label={`${profile.name} — home`}>
+      <span class="monogram" aria-hidden="true">
+        {initials}
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">{profile.name}</span>
+        <span class="brand-role">{profile.role}</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      <div class="nav-links" data-nav-links>
+        {nav.map((item) => (
+          <a
+            class="nav-link"
+            href={item.href}
+            aria-current={isCurrent(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <div class="nav-tools">
+        <button
+          class="icon-btn"
+          type="button"
+          data-theme-toggle
+          aria-label="Switch between light and dark theme"
+        >
+          <Icon name="sun" class="icon-swap icon-sun" />
+          <Icon name="moon" class="icon-swap icon-moon" />
+        </button>
+
+        <button
+          class="icon-btn nav-toggle"
+          type="button"
+          data-drawer-toggle
+          aria-expanded="false"
+          aria-controls="nav-drawer"
+          aria-label="Open menu"
+        >
+          <Icon name="menu" />
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <div class="scroll-progress" data-progress aria-hidden="true"></div>
+</header>
+
+<dialog class="drawer no-print" id="nav-drawer" data-drawer aria-label="Menu">
+  <button class="icon-btn drawer-close" type="button" data-drawer-close aria-label="Close menu">
+    <Icon name="close" />
+  </button>
+
+  {nav.map((item, index) => (
+    <a
+      class="drawer-link"
+      href={item.href}
+      style={`--d:${60 + index * 45}ms`}
+      aria-current={isCurrent(item.href) ? 'page' : undefined}
+    >
+      <span class="drawer-index">{String(index + 1).padStart(2, '0')}</span>
+      {item.label}
+    </a>
+  ))}
+
+  {/* The drawer is full-screen, so the space under the links is free — and
+      contact details are the thing people open a menu looking for. */}
+  <div class="drawer-foot">
+    <a class="drawer-mail" href={`mailto:${contact.email}`}>
+      <Icon name="mail" />
+      {contact.email}
+    </a>
+
+    <div class="drawer-socials">
+      {socials
+        .filter((social) => !social.href.startsWith('mailto:'))
+        .map((social) => (
+          <a href={social.href} target="_blank" rel="me noopener">
+            {social.label}
+          </a>
+        ))}
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import '../scripts/chrome';
+  import '../scripts/theme';
+</script>

@@ -1,0 +1,233 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroField from '../components/HeroField.astro';
+import Section from '../components/Section.astro';
+import TagList from '../components/TagList.astro';
+import Entry from '../components/Entry.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import Marquee from '../components/Marquee.astro';
+import Icon from '../components/Icon.astro';
+import { profile, contact, readout, focus, research, toolbelt } from '../data/site';
+
+/* Split the name so the family name can carry the display weight on its own
+   line — it reads as a masthead rather than a label. */
+const parts = profile.name.split(' ');
+const family = parts.at(-1);
+const given = parts.slice(0, -1).join(' ');
+
+const posts = (await getCollection('writing', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 2);
+---
+
+<BaseLayout bleed>
+  <section class="hero">
+    <HeroField />
+
+    <div class="shell hero-inner">
+      <div>
+        {profile.status && (
+          <p class="status-pill" data-reveal>
+            <span class="status-dot" aria-hidden="true" />
+            {profile.status}
+          </p>
+        )}
+
+        <h1 class="hero-name">
+          <span class="given" data-reveal="mask">
+            {given}
+          </span>
+          <span class="family" data-reveal="mask" style="--reveal-delay:110ms">
+            {family}
+          </span>
+        </h1>
+
+        <p class="hero-tagline" data-reveal style="--reveal-delay:140ms">
+          {profile.discipline.map((item, index) => (
+            <>
+              {index > 0 && <span class="sep" aria-hidden="true" />}
+              <span>{item}</span>
+            </>
+          ))}
+        </p>
+
+        <div class="hero-copy" data-reveal style="--reveal-delay:200ms">
+          {profile.intro.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+
+        <div class="hero-actions" data-reveal style="--reveal-delay:260ms">
+          <a class="btn btn-primary" href="/research">
+            Read the research
+            <Icon name="arrow" class="icon-arrow" />
+          </a>
+          <a class="btn" href="/projects">
+            Projects
+          </a>
+          <a class="btn btn-quiet" href={`mailto:${contact.email}`}>
+            <Icon name="mail" />
+            Get in touch
+          </a>
+        </div>
+      </div>
+
+      {/* An instrument-style readout — the same information a hero paragraph
+          would bury, set as data you can scan in two seconds. */}
+      <aside class="readout" data-reveal style="--reveal-delay:320ms">
+        <div class="readout-head">
+          <span>Current</span>
+          <span class="readout-bars" aria-hidden="true">
+            <i style="--d:0ms"></i>
+            <i style="--d:180ms"></i>
+            <i style="--d:360ms"></i>
+            <i style="--d:90ms"></i>
+            <i style="--d:270ms"></i>
+          </span>
+        </div>
+
+        <div class="readout-row">
+          <span class="readout-key">Role</span>
+          <span class="readout-val">Undergraduate researcher</span>
+        </div>
+        <div class="readout-row">
+          <span class="readout-key">At</span>
+          <span class="readout-val">{profile.affiliation}</span>
+        </div>
+        {readout.map((row) => (
+          <div class="readout-row">
+            <span class="readout-key">{row.key}</span>
+            <span class="readout-val">{row.value}</span>
+          </div>
+        ))}
+        <div class="readout-row">
+          <span class="readout-key">Contact</span>
+          <span class="readout-val">
+            <a href={`mailto:${contact.email}`}>{contact.email}</a>
+          </span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Marquee items={toolbelt} />
+
+  <div class="shell">
+    <Section title="What I work on" index="01" label="Focus">
+      <div class="grid grid-3" data-spotlight>
+        {focus.map((item, index) => (
+          <article class="card" data-reveal style={`--reveal-delay:${index * 80}ms`}>
+            <span class="card-index">{String(index + 1).padStart(2, '0')} / Focus</span>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+            <div class="card-foot">
+              <TagList items={item.tags} />
+            </div>
+          </article>
+        ))}
+      </div>
+    </Section>
+
+    <Section title="Selected research" index="02" label="Work">
+      <div class="entries">
+        {research.slice(0, 2).map((item) => (
+          <Entry {...item} />
+        ))}
+      </div>
+
+      <p data-reveal>
+        <a class="link-arrow" href="/research">
+          Everything I'm working on
+        </a>
+      </p>
+    </Section>
+
+    {posts.length > 0 && (
+      <Section title="Recent writing" index="03" label="Notes">
+        <div class="grid grid-2" data-spotlight>
+          {posts.map((post) => (
+            <ArticleCard post={post} />
+          ))}
+        </div>
+
+        <p data-reveal>
+          <a class="link-arrow" href="/writing">
+            All writing
+          </a>
+        </p>
+      </Section>
+    )}
+
+    <Section index="04" label="Contact">
+      <div class="cta" data-reveal>
+        <div>
+          <h2 style="font-size:var(--step-2);margin-bottom:0.4em">
+            Working on something adjacent?
+          </h2>
+          <p class="lede" style="margin:0">
+            I'm always glad to talk about detector physics, inference performance, or a problem you
+            think I'd find interesting.
+          </p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href={`mailto:${contact.email}`}>
+            <Icon name="mail" />
+            {contact.email}
+          </a>
+          <a class="btn btn-quiet" href="/resume">
+            Curriculum vitae
+            <Icon name="arrow" class="icon-arrow" />
+          </a>
+        </div>
+      </div>
+    </Section>
+  </div>
+</BaseLayout>
+
+<style>
+  .cta {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: var(--space-m) var(--space-xl);
+    align-items: center;
+    padding: clamp(1.5rem, 3vw, 2.4rem);
+    border: 1px solid var(--hair);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(28rem 18rem at 88% 0%, var(--accent-soft), transparent 70%), var(--surface);
+    box-shadow: var(--shadow-1);
+  }
+
+  /* Stacked and stretched on wide screens, so the two buttons share an edge
+     instead of ragging out at whatever width their labels happen to need. */
+  .cta-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.6rem;
+  }
+
+  .cta-actions .btn {
+    justify-content: center;
+  }
+
+  @media (max-width: 52rem) {
+    .cta-actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .cta-actions .btn {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .cta {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

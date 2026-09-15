@@ -1,0 +1,131 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagList from '../../components/TagList.astro';
+import Icon from '../../components/Icon.astro';
+import { formatDate, isoDate } from '../../lib/format';
+import { readingStats } from '../../lib/reading-time';
+import { articleSchema } from '../../lib/seo';
+
+export const getStaticPaths = (async () => {
+  const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+  );
+
+  /* Neighbours are resolved here rather than in the page body so each route
+     gets its own prev/next without re-querying the collection per page. */
+  return posts.map((post, index) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      newer: index > 0 ? posts[index - 1] : undefined,
+      older: index < posts.length - 1 ? posts[index + 1] : undefined,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post, newer, older } = Astro.props;
+const { Content, headings } = await render(post);
+const { minutes: readingTime, words: wordCount } = readingStats(post.body);
+
+/* h2 and h3 only: h4 and below are too granular to be useful in a sidebar.
+   `footnote-label` is GFM's own heading for the footnote list, not a section. */
+const toc = headings.filter(
+  (heading) => (heading.depth === 2 || heading.depth === 3) && heading.slug !== 'footnote-label',
+);
+
+const base = Astro.site ?? new URL(Astro.url.origin);
+const url = new URL(`/writing/${post.id}`, base).href;
+
+const schema = articleSchema({
+  title: post.data.title,
+  description: post.data.description,
+  url,
+  image: new URL(`/og/writing/${post.id}.png`, base).href,
+  published: post.data.pubDate,
+  updated: post.data.updatedDate,
+  tags: post.data.tags,
+});
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  ogType="article"
+  ogRoute={`writing/${post.id}`}
+  schema={schema}
+>
+  <header class="article-head">
+    <p class="eyebrow">
+      <a href="/writing" style="text-decoration:none">
+        Writing
+      </a>
+    </p>
+    <h1 data-reveal="mask">{post.data.title}</h1>
+
+    <div class="article-meta">
+      <time datetime={isoDate(post.data.pubDate)}>{formatDate(post.data.pubDate)}</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span style="display:inline-flex;align-items:center;gap:0.45em">
+        <Icon name="clock" size="0.9em" />
+        {readingTime} min · {wordCount.toLocaleString('en-GB')} words
+      </span>
+      {post.data.updatedDate && (
+        <>
+          <span class="dot" aria-hidden="true" />
+          <span>Updated {formatDate(post.data.updatedDate)}</span>
+        </>
+      )}
+    </div>
+
+    {post.data.tags.length > 0 && (
+      <div style="margin-top:var(--space-s)">
+        <TagList items={post.data.tags} />
+      </div>
+    )}
+  </header>
+
+  <div class="article-layout">
+    <article class="prose">
+      <Content />
+    </article>
+
+    {toc.length > 1 && (
+      <nav class="toc" data-toc aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          {toc.map((heading) => (
+            <li data-depth={heading.depth}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+  </div>
+
+  {(newer || older) && (
+    <nav class="pager" aria-label="More writing">
+      {older ? (
+        <a href={`/writing/${older.id}`}>
+          <span class="pager-dir">← Older</span>
+          <span class="pager-title">{older.data.title}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {newer && (
+        <a href={`/writing/${newer.id}`} class="pager-next">
+          <span class="pager-dir">Newer →</span>
+          <span class="pager-title">{newer.data.title}</span>
+        </a>
+      )}
+    </nav>
+  )}
+
+  <script>
+    import '../../scripts/toc';
+    import '../../scripts/prose';
+  </script>
+</BaseLayout>

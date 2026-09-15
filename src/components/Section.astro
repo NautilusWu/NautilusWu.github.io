@@ -1,0 +1,31 @@
+---
+/**
+ * A content section with the mono rail on the left. `index` is the number
+ * printed in the rail; `label` is the word under it.
+ */
+interface Props {
+  title?: string;
+  index?: string;
+  label?: string;
+  id?: string;
+  class?: string;
+}
+
+const { title, index, label, id, class: className } = Astro.props;
+---
+
+<section class:list={['section', className]} id={id}>
+  <div class="section-rail" aria-hidden="true">
+    {index && <span class="rail-index">{index}</span>}
+    {label && <span class="rail-label">{label}</span>}
+  </div>
+
+  <div class="section-body">
+    {title && (
+      <h2 class="section-title" data-reveal="mask">
+        {title}
+      </h2>
+    )}
+    <slot />
+  </div>
+</section>

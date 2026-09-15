@@ -1,0 +1,65 @@
+---
+import Icon from './Icon.astro';
+import { profile, contact, socials, nav } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer no-print" transition:persist>
+  <div class="shell">
+    <div class="footer-top">
+      <div>
+        <p class="footer-sig">{profile.name}</p>
+        <p style="margin:0;max-width:32ch">
+          {profile.affiliation} · {profile.location}
+        </p>
+        <p style="margin-top:0.9em">
+          <a class="link-arrow" href={`mailto:${contact.email}`}>
+            Start a conversation
+          </a>
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h2>Pages</h2>
+        <ul>
+          {nav.slice(1).map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2>Elsewhere</h2>
+        <ul>
+          {socials.map((social) => (
+            <li>
+              <a
+                href={social.href}
+                rel={social.href.startsWith('mailto:') ? 'me' : 'me noopener'}
+                target={social.href.startsWith('mailto:') ? undefined : '_blank'}
+              >
+                {social.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href="/rss.xml">RSS</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>
+        © {year} {profile.name}
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:0.6em">
+        <Icon name="spark" size="0.85em" />
+        Built with Astro · no framework runtime
+      </span>
+    </div>
+  </div>
+</footer>

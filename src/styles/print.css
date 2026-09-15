@@ -1,0 +1,112 @@
+/* ==========================================================================
+   Print — /resume is designed to come out of a printer as a real CV
+   ========================================================================== */
+
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --bg: #fff;
+    --bg-sunk: #fff;
+    --surface: #fff;
+    --surface-2: #fff;
+    --fg: #000;
+    --fg-2: #1a1a1a;
+    --fg-3: #444;
+    --fg-4: #555;
+    --hair: #d4d4d4;
+    --hair-2: #bbb;
+    --hair-3: #999;
+    --accent: #000;
+    --accent-line: #999;
+    --shadow-1: none;
+    --shadow-2: none;
+    --shadow-pop: none;
+    --grain-opacity: 0;
+    --section-gap: 14pt;
+  }
+
+  @page {
+    margin: 14mm 14mm 16mm;
+  }
+
+  body {
+    font-size: 9.8pt;
+    line-height: 1.45;
+  }
+
+  body::before,
+  .site-header,
+  .site-footer,
+  .drawer,
+  .hero-glow,
+  .hero-grid,
+  .hero-canvas,
+  .no-print {
+    display: none !important;
+  }
+
+  .shell,
+  .shell-narrow {
+    width: 100%;
+  }
+
+  /* The rail collapses so the CV uses the full width of the page. */
+  .section {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 0 1rem;
+    padding-block: 10pt;
+    break-inside: avoid;
+  }
+
+  .section::before {
+    display: none;
+  }
+
+  .section-rail {
+    position: static;
+  }
+
+  .entry,
+  .defrow,
+  .card {
+    break-inside: avoid;
+  }
+
+  .entry {
+    padding-block: 7pt;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+  }
+
+  .entry::before {
+    display: none;
+  }
+
+  h1 {
+    font-size: 22pt;
+  }
+  h2 {
+    font-size: 12pt;
+  }
+  h3 {
+    font-size: 10.5pt;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  /* Spell out destinations, since a printed link can't be clicked. */
+  .defval a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-family: var(--face-mono);
+    font-size: 7.5pt;
+    color: #666;
+  }
+
+  .js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+}
