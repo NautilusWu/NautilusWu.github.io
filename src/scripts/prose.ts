@@ -7,7 +7,7 @@ import { onReady } from './ready';
  * - headings get a hover-revealed `#` link;
  * - wide tables get their own horizontal scroll container, so a table can
  *   never make the whole page scroll sideways;
- * - code blocks get a copy button.
+ * - code blocks get a copy button, in a wrapper that does not scroll.
  *
  * The heading anchors were originally a build-time Markdown plugin, which
  * cannot work: Astro assigns heading ids after every user plugin has run, so
@@ -48,7 +48,7 @@ onReady(() => {
   const cleanups: Array<() => void> = [];
 
   prose.querySelectorAll<HTMLPreElement>('pre').forEach((pre) => {
-    if (pre.querySelector('.copy-btn')) return;
+    if (pre.parentElement?.classList.contains('code-block')) return;
 
     const button = document.createElement('button');
     button.type = 'button';
@@ -56,32 +56,56 @@ onReady(() => {
     button.textContent = 'Copy';
     button.setAttribute('aria-label', 'Copy code to clipboard');
 
-    /* Read the code out of <code>, not out of <pre>. The button lives inside
-       the <pre>, so `pre.innerText` includes the button's own label — and
-       `innerText` returns *rendered* text, so `text-transform: uppercase` on
-       the button made that label "COPY" rather than "Copy". A regex stripping
-       a trailing "Copy" therefore never matched, and every copied snippet came
-       with a stray COPY (or COPIED, on the second click) glued to the end.
-       `textContent` on the <code> element is the exact source text. */
+    const status = document.createElement('span');
+    status.className = 'visually-hidden';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-atomic', 'true');
+
+    /* `textContent` of the <code>, which is the exact source text. Not
+       `innerText`: that returns *rendered* text, and when the button still
+       lived inside the <pre> it picked up the button's uppercased label, so
+       every copied snippet ended in a stray COPY. */
     const codeOf = () => (pre.querySelector('code') ?? pre).textContent ?? '';
 
     let reset: number | undefined;
     const onClick = async () => {
+      status.textContent = '';
       try {
         await navigator.clipboard.writeText(codeOf());
         button.textContent = 'Copied';
+        button.setAttribute('aria-label', 'Copied code to clipboard');
+        status.textContent = 'Code copied to clipboard.';
       } catch {
-        button.textContent = 'Press ⌘C';
+        // Clipboard access can be denied or unavailable. Leave the source
+        // selected so the browser's normal copy shortcut still works.
+        const selection = window.getSelection();
+        if (selection) {
+          const range = document.createRange();
+          range.selectNodeContents(pre.querySelector('code') ?? pre);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+        button.textContent = selection ? 'Code selected' : 'Select code';
+        const message = selection
+          ? 'Code selected. Press Control+C or Command+C to copy.'
+          : 'Select the code, then press Control+C or Command+C to copy.';
+        button.setAttribute('aria-label', message);
+        status.textContent = message;
       }
       window.clearTimeout(reset);
       reset = window.setTimeout(() => {
         button.textContent = 'Copy';
+        button.setAttribute('aria-label', 'Copy code to clipboard');
       }, 1600);
     };
 
     button.addEventListener('click', onClick);
-    pre.style.position = 'relative';
-    pre.append(button);
+
+    // Outside the <pre>, which scrolls sideways — see `.code-block`.
+    const wrap = document.createElement('div');
+    wrap.className = 'code-block';
+    pre.replaceWith(wrap);
+    wrap.append(pre, button, status);
 
     cleanups.push(() => {
       button.removeEventListener('click', onClick);

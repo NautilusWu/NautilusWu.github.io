@@ -5,7 +5,7 @@
 
      tokens      → custom properties only, no selectors that paint
      base        → element defaults and the page ground
-     layout      → the shell, the section rail, grids
+     layout      → the shell, bands, sections, grids
      components  → every named UI piece
      prose       → long-form article typography
      print       → the CV's printed form
@@ -18,4 +18,5 @@
 @import './layout.css';
 @import './components.css';
 @import './prose.css';
+@import './portfolio.css';
 @import './print.css';

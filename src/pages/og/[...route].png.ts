@@ -1,7 +1,7 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
 import { renderCard, type CardInput } from '../../lib/og-card';
-import { profile, focus, skills } from '../../data/site';
+import { pages, profile } from '../../data/site';
 
 /**
  * One Open Graph card per page, all generated during the build.
@@ -13,7 +13,7 @@ import { profile, focus, skills } from '../../data/site';
 export const getStaticPaths = (async () => {
   const posts = await getCollection('writing', ({ data }) => !data.draft);
 
-  const pages: Array<{ route: string; card: CardInput }> = [
+  const cards: Array<{ route: string; card: CardInput }> = [
     {
       route: 'home',
       card: {
@@ -24,48 +24,30 @@ export const getStaticPaths = (async () => {
       },
     },
     {
-      route: 'research',
+      route: 'experience',
       card: {
-        kind: 'Research',
-        title: 'Measuring things carefully, then computing with them',
-        subtitle: 'Detector simulation, test-beam analysis, and the tooling around both.',
-        tags: focus[0].tags,
-      },
-    },
-    {
-      route: 'projects',
-      card: {
-        kind: 'Projects',
-        title: 'Things I built to understand something',
-        subtitle: 'Inference profiling, detector analysis tooling, and this website.',
-        tags: skills[2].items.slice(0, 3),
+        kind: 'Experience',
+        title: pages.experience.title,
+        subtitle: pages.experience.lede,
+        tags: ['Professional', 'Teaching', 'Leadership'],
       },
     },
     {
       route: 'writing',
       card: {
         kind: 'Writing',
-        title: 'Notes from the middle of the problem',
-        subtitle: 'What I measured, what surprised me, and what I would do differently.',
-        tags: ['Physics', 'ML Systems', 'Web'],
+        title: pages.writing.title,
+        subtitle: pages.writing.description,
+        tags: pages.writing.topics,
       },
     },
     {
       route: 'resume',
       card: {
-        kind: 'Curriculum Vitae',
+        kind: 'Resume',
         title: profile.name,
         subtitle: `${profile.discipline.join(' · ')} — ${profile.affiliation}`,
-        tags: ['Education', 'Research', 'Projects'],
-      },
-    },
-    {
-      route: 'about',
-      card: {
-        kind: 'About',
-        title: 'Curiosity first, rigour right behind it',
-        subtitle: 'How I got here, what I am working on now, and how to get in touch.',
-        tags: ['Bio', 'Now', 'Contact'],
+        tags: ['Education', 'Experience', 'Honours'],
       },
     },
     ...posts.map((post) => ({
@@ -79,7 +61,7 @@ export const getStaticPaths = (async () => {
     })),
   ];
 
-  return pages.map(({ route, card }) => ({ params: { route }, props: { card } }));
+  return cards.map(({ route, card }) => ({ params: { route }, props: { card } }));
 }) satisfies GetStaticPaths;
 
 export const GET: APIRoute<{ card: CardInput }> = async ({ props }) => {

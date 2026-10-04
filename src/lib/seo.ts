@@ -17,7 +17,7 @@ export function personSchema(siteUrl: string) {
     name: profile.name,
     url: siteUrl,
     email: `mailto:${contact.email}`,
-    jobTitle: 'Undergraduate Researcher',
+    jobTitle: 'Data Science Student',
     description: profile.description,
     knowsAbout: [...profile.discipline],
     affiliation: {

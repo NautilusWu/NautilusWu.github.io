@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Layout — the page shell, the section rail, and the grids
+   Layout — the page shell, bands, sections, and the grids
    ========================================================================== */
 
 .shell {
@@ -7,143 +7,141 @@
   margin-inline: auto;
 }
 
-.shell-narrow {
-  width: min(var(--shell-narrow), 100% - var(--gutter) * 2);
-  margin-inline: auto;
+/* — Bands —————————————————————————————————————————————————————
+   The dark strip that opens every page — the home hero and each page header
+   alike. It re-declares the colour tokens (see tokens.css), so it stays dark
+   in both themes and everything inside it adapts without special cases. */
+
+.band {
+  --bg: var(--band-bg);
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: var(--bg);
+  color: var(--fg);
 }
 
-.prose-width {
-  max-width: var(--measure);
+/* A faint measurement grid, fading in towards the right. */
+.band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--hair) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hair) 1px, transparent 1px);
+  background-size: 68px 68px;
+  opacity: 0.2;
+  mask-image: linear-gradient(90deg, transparent 30%, black);
+}
+
+/* The mono line along the top (and, on the home page, the bottom) edge. */
+.band-overline,
+.band-bottomline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  font-family: var(--face-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.band-overline {
+  padding-block: 1.8rem;
+  border-bottom: 1px solid var(--hair);
+}
+
+.band-overline a {
+  text-decoration: none;
+}
+
+.band-overline a:hover {
+  color: var(--accent);
+}
+
+/* — Page headers ————————————————————————————————————————————— */
+
+.page-hero-body {
+  padding-block: clamp(2.75rem, 6vw, 4.75rem) clamp(2.5rem, 5vw, 4rem);
+}
+
+.page-hero h1 {
+  max-width: 22ch;
+  font-size: clamp(2.6rem, 5.6vw, 4.6rem);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+/* The lime full stop is the site's signature, from the home page's name. */
+.title-dot {
+  color: var(--accent);
+}
+
+/* Two classes deep so it beats the components' own `margin: 0` resets
+   (`.tags`, `.note`), which load after this file. */
+.page-hero .page-hero-body > * + * {
+  margin-top: 1.5rem;
+}
+
+.page-hero-lede {
+  max-width: 54ch;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.12rem);
+  line-height: 1.7;
+  color: var(--fg-2);
 }
 
 /* — Sections ————————————————————————————————————————————————
-   Every content section is a two-column grid: a mono "rail" carrying the
-   section number and label, and the content itself. Below the rail
-   breakpoint the two stack and the rail becomes an eyebrow. */
+   Every section, on every page: a hairline on top, then a mono kicker
+   ("01 / SELECTED WORK"), a bold title, and an optional aside on the right. */
 
 .section {
-  --rail-width: var(--rail);
-  display: grid;
-  grid-template-columns: var(--rail-width) minmax(0, 1fr);
-  gap: 0 var(--space-xl);
   padding-block: var(--section-gap);
   border-top: 1px solid var(--hair);
-  position: relative;
 }
 
 .section:first-child {
   border-top: 0;
 }
 
-/* A tick mark sitting on the section's top rule, aligned with the rail —
-   the same fiducial language as the cards. */
-.section:not(:first-child)::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: 2.25rem;
-  height: 2px;
-  background: var(--accent);
-  opacity: 0.75;
-}
-
-.section-rail {
-  position: sticky;
-  top: 6.5rem;
-  align-self: start;
-  /* Optically aligns the small mono cap-height with the heading's. */
-  padding-top: 0.35em;
+.section-head {
   display: flex;
-  flex-direction: column;
-  gap: 0.35em;
-  font-family: var(--face-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-4);
-  line-height: 1.5;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
 }
 
-.section-rail .rail-index {
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
+.section-kicker {
+  margin: 0 0 1rem;
+  font-family: var(--face-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.section-title {
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  font-weight: 620;
+  line-height: 1.06;
+  letter-spacing: -0.055em;
+}
+
+.section-aside {
+  max-width: 36ch;
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.65;
+  color: var(--fg-2);
 }
 
 .section-body > * + * {
   margin-top: var(--space-m);
-}
-
-.section-title {
-  margin-bottom: var(--space-m);
-}
-
-@media (max-width: 60rem) {
-  .section {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-s);
-  }
-
-  .section-rail {
-    position: static;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.75em;
-  }
-
-  .section-rail .rail-label::before {
-    content: '·';
-    margin-right: 0.7em;
-    color: var(--hair-3);
-  }
-}
-
-/* — Page headers ———————————————————————————————————————————— */
-
-.page-head {
-  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2rem, 4vw, 3rem);
-}
-
-.page-head h1 {
-  font-size: var(--step-5);
-  margin-block: 0.5rem var(--space-s);
-  max-width: 24ch;
-}
-
-.lede {
-  font-size: var(--step-1);
-  line-height: 1.5;
-  letter-spacing: -0.012em;
-  color: var(--fg-2);
-  max-width: 54ch;
-  text-wrap: pretty;
-}
-
-/* — Eyebrow: the small mono label that titles everything ————— */
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  margin: 0;
-  font-family: var(--face-mono);
-  font-size: var(--step--2);
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg-4);
-}
-
-.eyebrow::before {
-  content: '';
-  width: 1.4rem;
-  height: 1px;
-  background: var(--accent);
-  opacity: 0.8;
-}
-
-.eyebrow-plain::before {
-  display: none;
 }
 
 /* — Grids ——————————————————————————————————————————————————— */
@@ -164,28 +162,7 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
 }
 
-.cluster {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs) var(--space-s);
-  align-items: center;
-}
-
-.stack-s > * + * {
-  margin-top: var(--space-xs);
-}
+/* Even vertical rhythm for a run of paragraphs. */
 .stack-m > * + * {
   margin-top: var(--space-s);
-}
-.stack-l > * + * {
-  margin-top: var(--space-m);
-}
-
-/* — Hairline divider with a gradient falloff ————————————————— */
-
-.rule {
-  height: 1px;
-  border: 0;
-  margin: 0;
-  background: linear-gradient(to right, var(--hair-2), var(--hair) 30%, transparent);
 }

@@ -13,8 +13,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title><xsl:value-of select="/rss/channel/title" /> — RSS feed</title>
         <style>
-          :root { color-scheme: light dark; --fg: #1b1d23; --mut: #6b7280; --hair: #e3e0da; --bg: #fbfaf8; --acc: #2f4a99 }
-          @media (prefers-color-scheme: dark) { :root { --fg: #e9ebf0; --mut: #8f97a6; --hair: #2a2e36; --bg: #14171d; --acc: #93aaf5 } }
+          :root { color-scheme: light dark; --fg: #121d19; --mut: #5f6965; --hair: #e0e2dd; --bg: #fafaf6; --acc: #3c6511 }
+          @media (prefers-color-scheme: dark) { :root { --fg: #f3f5ec; --mut: #a0afa7; --hair: #293530; --bg: #14201c; --acc: #c6f18a } }
           * { box-sizing: border-box }
           body { margin: 0; padding: 4rem 1.5rem; background: var(--bg); color: var(--fg);
                  font: 16px/1.65 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif }

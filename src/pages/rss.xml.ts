@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { profile, contact } from '../data/site';
+import { pages, profile, contact } from '../data/site';
 
 export const GET: APIRoute = async (context) => {
   const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
@@ -10,7 +10,7 @@ export const GET: APIRoute = async (context) => {
 
   return rss({
     title: `${profile.name} — Writing`,
-    description: 'Notes on detector simulation, ML systems performance, and web engineering.',
+    description: pages.writing.description,
     site: context.site ?? 'https://edwardwu.dev',
     trailingSlash: false,
     items: posts.map((post) => ({

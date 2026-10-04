@@ -7,7 +7,9 @@ const long = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'UTC',
 });
 
-const short = new Intl.DateTimeFormat('en-GB', {
+/* en-US for the short form: en-GB abbreviates September to "Sept", which
+   breaks the even three-letter column of role dates ("Aug", "Sep", "Oct"). */
+const short = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   year: 'numeric',
   timeZone: 'UTC',

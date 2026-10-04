@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Section from '../components/Section.astro';
+import Entry from '../components/Entry.astro';
+import TagList from '../components/TagList.astro';
+import { experienceGroups, pages, skills } from '../data/site';
+import { formatPeriod, roles, rolesOf } from '../lib/experience';
+
+const page = pages.experience;
+const groups = experienceGroups
+  .map((group) => ({ ...group, roles: rolesOf(group.kind) }))
+  .filter((group) => group.roles.length > 0);
+---
+
+<BaseLayout title="Experience" description={page.description}>
+  <PageHeader
+    slot="hero"
+    eyebrow="Experience"
+    meta={`${String(roles.length).padStart(2, '0')} roles`}
+    title={page.title}
+    lede={page.lede}
+  />
+
+  {groups.map((group, index) => (
+    <Section
+      title={group.title}
+      index={String(index + 1).padStart(2, '0')}
+      label={group.label}
+      id={group.kind}
+    >
+      <div class="entries">
+        {group.roles.map((role) => (
+          <Entry
+            title={role.role}
+            subtitle={role.org}
+            period={formatPeriod(role)}
+            place={role.location}
+            bullets={role.bullets}
+          />
+        ))}
+      </div>
+    </Section>
+  ))}
+
+  <Section
+    title="Methods and tools"
+    index={String(groups.length + 1).padStart(2, '0')}
+    label="Toolkit"
+  >
+    <div class="deflist">
+      {skills.map((group) => (
+        <div class="defrow" data-reveal>
+          <span class="defkey">{group.group}</span>
+          <span class="defval">
+            <TagList items={group.items} />
+          </span>
+        </div>
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

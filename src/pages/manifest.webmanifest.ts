@@ -9,8 +9,9 @@ export const GET: APIRoute = () =>
       description: profile.description,
       start_url: '/',
       display: 'minimal-ui',
-      background_color: '#fcfbf8',
-      theme_color: '#fcfbf8',
+      // The light theme's `--bg` (tokens.css), as sRGB.
+      background_color: '#fafaf6',
+      theme_color: '#fafaf6',
       icons: [
         { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         { src: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },

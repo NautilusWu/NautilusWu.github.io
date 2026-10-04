@@ -39,7 +39,7 @@
 }
 
 .header-inner {
-  min-height: 4.25rem;
+  min-height: 5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -104,6 +104,7 @@
   color: inherit;
 }
 
+/* An ink tile with the initials; a lime outline grows out of it on hover. */
 .monogram {
   position: relative;
   width: 2rem;
@@ -111,42 +112,37 @@
   flex: none;
   display: grid;
   place-items: center;
-  border: 1px solid var(--hair-3);
-  border-radius: 50%;
+  border: 1px solid var(--fg);
+  border-radius: 8px;
+  background: var(--fg);
   font-family: var(--face-mono);
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--fg-2);
-  transition:
-    transform var(--dur-3) var(--ease-spring),
-    border-color var(--dur-2) var(--ease),
-    color var(--dur-2) var(--ease);
+  color: var(--bg);
+  transition: transform var(--dur-3) var(--ease-spring);
 }
 
-/* A second ring that scales out like a detector pulse on hover. */
 .monogram::after {
   content: '';
   position: absolute;
   inset: -1px;
-  border: 1px solid var(--accent);
-  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  border-radius: 10px;
   opacity: 0;
-  transform: scale(0.7);
+  transform: scale(0.8);
   transition:
     opacity var(--dur-3) var(--ease),
     transform var(--dur-3) var(--ease);
 }
 
 .brand:hover .monogram {
-  transform: rotate(-14deg);
-  border-color: var(--accent-line);
-  color: var(--accent);
+  transform: rotate(-8deg);
 }
 
 .brand:hover .monogram::after {
   opacity: 1;
-  transform: scale(1.32);
+  transform: scale(1.28);
 }
 
 .brand-text {
@@ -156,17 +152,19 @@
 }
 
 .brand-name {
-  font-family: var(--face-display);
+  font-family: var(--face-sans);
   font-size: 1.02rem;
-  letter-spacing: -0.015em;
+  font-weight: 650;
+  letter-spacing: -0.03em;
 }
 
 .brand-role {
+  margin-top: 0.3rem;
   font-family: var(--face-mono);
   font-size: 0.6rem;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: var(--fg-4);
+  color: var(--fg-3);
 }
 
 /* — Primary nav — */
@@ -242,8 +240,8 @@
 
 .icon-btn {
   position: relative;
-  width: 2.15rem;
-  height: 2.15rem;
+  width: 2.75rem;
+  height: 2.75rem;
   display: grid;
   place-items: center;
   border: 1px solid var(--hair);
@@ -305,11 +303,27 @@
     display: none;
   }
 
-  .nav-links {
+  .site-header:not([data-drawer-ready]) .header-inner {
+    flex-wrap: wrap;
+    height: auto;
+    padding-block: 0.7rem;
+    gap: 0.5rem;
+  }
+
+  .site-header:not([data-drawer-ready]) .nav {
+    flex-basis: 100%;
+    justify-content: space-between;
+  }
+
+  .site-header:not([data-drawer-ready]) .nav-links {
+    flex-wrap: wrap;
+  }
+
+  .site-header[data-drawer-ready] .nav-links {
     display: none;
   }
 
-  .nav-toggle {
+  .site-header[data-drawer-ready] .nav-toggle {
     display: grid;
   }
 
@@ -461,300 +475,12 @@
 }
 
 /* --------------------------------------------------------------------------
-   Hero
-   -------------------------------------------------------------------------- */
-
-.hero {
-  position: relative;
-  isolation: isolate;
-  padding-block: clamp(3.5rem, 9vw, 8rem) clamp(3rem, 6vw, 6rem);
-  overflow: clip;
-}
-
-/* Layer 1 — two very soft colour washes that drift. */
-.hero-glow {
-  position: absolute;
-  inset: -20% -10% auto;
-  height: 130%;
-  z-index: -3;
-  pointer-events: none;
-  background:
-    radial-gradient(46rem 30rem at 78% 18%, var(--glow-a), transparent 68%),
-    radial-gradient(34rem 26rem at 12% 72%, var(--glow-b), transparent 70%);
-  filter: blur(6px);
-  animation: glow-drift 26s var(--ease-in-out) infinite alternate;
-}
-
-@keyframes glow-drift {
-  from {
-    transform: translate3d(-1.5%, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(1.5%, -2%, 0) scale(1.06);
-  }
-}
-
-/* Layer 2 — a hairline measurement grid, masked so it fades out. */
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, var(--hair) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--hair) 1px, transparent 1px);
-  background-size: 5.5rem 5.5rem;
-  mask-image: radial-gradient(95% 80% at 62% 6%, #000 0%, transparent 62%);
-  -webkit-mask-image: radial-gradient(95% 80% at 62% 6%, #000 0%, transparent 62%);
-  opacity: 0.55;
-}
-
-/* Layer 3 — the generative particle field. */
-.hero-canvas {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: var(--canvas-opacity);
-  mask-image: radial-gradient(115% 100% at 68% 28%, #000 18%, transparent 80%);
-  -webkit-mask-image: radial-gradient(115% 100% at 68% 28%, #000 18%, transparent 80%);
-}
-
-.hero-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: start;
-}
-
-@media (max-width: 62rem) {
-  .hero-inner {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65em;
-  padding: 0.35em 0.9em 0.35em 0.7em;
-  margin: 0 0 var(--space-m);
-  border: 1px solid var(--hair);
-  border-radius: var(--radius-pill);
-  background: color-mix(in oklab, var(--surface) 60%, transparent);
-  font-family: var(--face-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fg-2);
-}
-
-.status-dot {
-  position: relative;
-  width: 0.42em;
-  height: 0.42em;
-  flex: none;
-  border-radius: 50%;
-  background: var(--warm);
-}
-
-.status-dot::after {
-  content: '';
-  position: absolute;
-  inset: -0.25em;
-  border-radius: 50%;
-  border: 1px solid var(--warm);
-  animation: ping 2.6s var(--ease-in-out) infinite;
-}
-
-@keyframes ping {
-  0% {
-    transform: scale(0.6);
-    opacity: 0.9;
-  }
-  70%,
-  100% {
-    transform: scale(2.1);
-    opacity: 0;
-  }
-}
-
-/* The name is set as a two-line masthead: the given name recedes, the family
-   name carries the weight. Both in the display face so it reads as one word
-   mark rather than a label above a title. */
-.hero-name {
-  margin: 0 0 var(--space-s);
-  font-size: var(--step-6);
-  line-height: 0.92;
-  letter-spacing: -0.035em;
-}
-
-.hero-name .given,
-.hero-name .family {
-  display: block;
-}
-
-.hero-name .given {
-  color: var(--fg-4);
-}
-
-.hero-name .family {
-  position: relative;
-  width: fit-content;
-  color: var(--fg);
-}
-
-/* A hairline that draws itself under the family name once it lands. */
-.hero-name .family::after {
-  content: '';
-  position: absolute;
-  left: 0.06em;
-  right: 0.06em;
-  bottom: 0.06em;
-  height: 2px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 900ms var(--ease) 420ms;
-}
-
-.js .hero-name .family.is-in::after,
-html:not(.js) .hero-name .family::after {
-  transform: scaleX(1);
-}
-
-.hero-tagline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5em 0.85em;
-  margin: 0 0 var(--space-m);
-  font-family: var(--face-mono);
-  font-size: var(--step--1);
-  letter-spacing: 0.02em;
-  color: var(--fg-3);
-}
-
-.hero-tagline .sep {
-  width: 1.1rem;
-  height: 1px;
-  background: var(--hair-3);
-}
-
-.hero-copy {
-  color: var(--fg-2);
-  max-width: 54ch;
-}
-
-.hero-copy p + p {
-  margin-top: 0.9em;
-}
-
-/* Drop-cap-ish opening: the first line of the first paragraph gets a little
-   more presence without shouting. */
-.hero-copy > p:first-child {
-  font-size: var(--step-1);
-  line-height: 1.5;
-  letter-spacing: -0.012em;
-  color: var(--fg);
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: var(--space-m);
-}
-
-/* — The readout panel: an instrument-style key/value block — */
-
-.readout {
-  position: relative;
-  padding: var(--space-s);
-  border: 1px solid var(--hair);
-  border-radius: var(--radius);
-  background: color-mix(in oklab, var(--surface) 72%, transparent);
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-1);
-  font-family: var(--face-mono);
-  font-size: var(--step--2);
-}
-
-.readout-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 0.75em;
-  margin-bottom: 0.25em;
-  border-bottom: 1px solid var(--hair);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-4);
-}
-
-.readout-row {
-  display: grid;
-  grid-template-columns: 5.5rem minmax(0, 1fr);
-  gap: 0.9em;
-  padding-block: 0.62em;
-  border-bottom: 1px dashed var(--hair);
-}
-
-.readout-row:last-child {
-  border-bottom: 0;
-  padding-bottom: 0.1em;
-}
-
-.readout-key {
-  color: var(--fg-4);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.readout-val {
-  color: var(--fg-2);
-  overflow-wrap: anywhere;
-}
-
-.readout-val a {
-  text-decoration-color: var(--hair-2);
-}
-
-.readout-bars {
-  display: flex;
-  gap: 2px;
-  align-items: flex-end;
-  height: 0.7rem;
-}
-
-/* Full height, scaled down — `transform` is composited, whereas animating
-   `height` would put five elements through layout and paint on every frame for
-   as long as the page is open. */
-.readout-bars i {
-  width: 2px;
-  height: 100%;
-  transform-origin: bottom;
-  background: var(--accent);
-  opacity: 0.55;
-  animation: bar-pulse 1.6s var(--ease-in-out) infinite alternate;
-  animation-delay: var(--d, 0ms);
-}
-
-@keyframes bar-pulse {
-  from {
-    transform: scaleY(0.22);
-  }
-  to {
-    transform: scaleY(1);
-  }
-}
-
-/* --------------------------------------------------------------------------
    Buttons
    -------------------------------------------------------------------------- */
 
+/* Squared-off, one height everywhere. Colours come from local custom
+   properties, so variants only re-point them — and inside a `.band` the
+   inherited tokens make the same button light-on-dark with no extra rules. */
 .btn {
   --btn-bg: transparent;
   --btn-fg: var(--fg);
@@ -764,32 +490,26 @@ html:not(.js) .hero-name .family::after {
   display: inline-flex;
   align-items: center;
   gap: 0.55em;
+  min-height: 2.85rem;
   padding: 0.62em 1.15em;
   border: 1px solid var(--btn-edge);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   background: var(--btn-bg);
   color: var(--btn-fg);
   font-size: var(--step--1);
-  font-weight: 480;
+  font-weight: 550;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  overflow: hidden;
   transition:
-    transform var(--dur-2) var(--ease),
     border-color var(--dur-2) var(--ease),
     color var(--dur-2) var(--ease),
-    background var(--dur-2) var(--ease),
-    box-shadow var(--dur-2) var(--ease);
+    background var(--dur-2) var(--ease);
 }
 
 .btn:hover {
-  transform: translateY(-1px);
+  --btn-edge: var(--accent);
   color: var(--btn-fg);
-}
-
-.btn:active {
-  transform: translateY(0);
 }
 
 .btn svg {
@@ -803,52 +523,31 @@ html:not(.js) .hero-name .family::after {
   transform: translateX(0.2em);
 }
 
+/* The lime button, the same on light pages and dark bands. */
 .btn-primary {
-  --btn-bg: var(--fg);
-  --btn-fg: var(--bg);
-  --btn-edge: var(--fg);
-  box-shadow: var(--shadow-1);
+  --btn-bg: var(--lime);
+  --btn-fg: var(--lime-ink);
+  --btn-edge: var(--lime);
 }
 
 .btn-primary:hover {
-  --btn-bg: var(--accent);
-  --btn-edge: var(--accent);
-  --btn-fg: var(--accent-fg);
-  box-shadow: var(--shadow-2);
-}
-
-/* A single specular sweep across the primary button on hover. */
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 20%,
-    color-mix(in oklab, var(--bg) 55%, transparent) 45%,
-    transparent 70%
-  );
-  transform: translateX(-120%);
-  transition: transform var(--dur-4) var(--ease);
-}
-
-.btn-primary:hover::after {
-  transform: translateX(120%);
+  --btn-bg: var(--lime-hover);
+  --btn-edge: var(--lime-hover);
 }
 
 .btn-quiet {
   --btn-edge: var(--hair);
-  color: var(--fg-2);
+  --btn-fg: var(--fg-2);
 }
 
 .btn-quiet:hover {
-  --btn-edge: var(--accent-line);
-  color: var(--accent);
+  --btn-fg: var(--accent);
 }
 
-.btn-sm {
-  padding: 0.45em 0.9em;
-  font-size: var(--step--2);
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
 /* A text link that behaves like a button target: arrow + growing rule. */
@@ -857,8 +556,9 @@ html:not(.js) .hero-name .family::after {
   align-items: center;
   gap: 0.5em;
   font-size: var(--step--1);
+  font-weight: 550;
   text-decoration: none;
-  color: var(--fg-2);
+  color: var(--fg);
 }
 
 .link-arrow::after {
@@ -882,101 +582,61 @@ html:not(.js) .hero-name .family::after {
 }
 
 /* --------------------------------------------------------------------------
-   Cards
+   Cards — the same surface as the selected-work cards on the home page
    -------------------------------------------------------------------------- */
 
 .card {
-  --spot: transparent;
-
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: clamp(1.1rem, 2vw, 1.6rem);
+  padding: clamp(1.25rem, 2vw, 1.65rem);
   border: 1px solid var(--hair);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow-1);
-  isolation: isolate;
-  overflow: hidden;
   transition:
-    transform var(--dur-3) var(--ease),
     border-color var(--dur-2) var(--ease),
-    box-shadow var(--dur-3) var(--ease);
-}
-
-/* Pointer-tracked spotlight. A single delegated listener on the grid writes
-   --mx/--my (see `spotlight.ts`), so this costs one composited gradient. */
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(
-    16rem 16rem at var(--mx, 50%) var(--my, 0%),
-    var(--accent-soft),
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity var(--dur-3) var(--ease);
+    box-shadow var(--dur-2) var(--ease);
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  border-color: var(--hair-2);
-  box-shadow: var(--shadow-pop);
-}
-
-.card:hover::before {
-  opacity: 1;
-}
-
-/* Fiducial corner marks — the little registration crosses you see on a
-   printed plate. They draw themselves in on hover. */
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-top: 1px solid var(--accent);
-  border-right: 1px solid var(--accent);
-  opacity: 0;
-  transform: translate(-0.25rem, 0.25rem);
-  transition:
-    opacity var(--dur-2) var(--ease),
-    transform var(--dur-3) var(--ease);
-}
-
-.card:hover::after {
-  opacity: 0.7;
-  transform: none;
+  border-color: var(--hair-3);
+  box-shadow: var(--shadow-hover);
 }
 
 .card-index {
   display: block;
-  margin-bottom: 0.9em;
+  margin-bottom: 0.9rem;
   font-family: var(--face-mono);
-  font-size: var(--step--2);
+  font-size: 0.6rem;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.075em;
   text-transform: uppercase;
-  color: var(--fg-4);
+  color: var(--fg-3);
 }
 
 .card h3 {
-  margin-bottom: 0.4em;
+  margin-bottom: 0.65rem;
+  font-size: clamp(1.1rem, 1.55vw, 1.35rem);
+  font-weight: 620;
+  line-height: 1.3;
+  letter-spacing: -0.035em;
 }
 
 .card p {
   color: var(--fg-2);
-  font-size: var(--step--1);
-  line-height: 1.6;
+  font-size: 0.87rem;
+  line-height: 1.7;
 }
 
+/* Tags on the left, a call to action on the right. */
 .card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-top: auto;
-  padding-top: var(--space-s);
+  padding-top: 1.25rem;
 }
 
 /* A card that is entirely one link: the whole surface is the hit area. */
@@ -1008,142 +668,88 @@ html:not(.js) .hero-name .family::after {
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.4rem;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .tag {
-  padding: 0.18em 0.62em;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
   border: 1px solid var(--hair);
-  border-radius: var(--radius-pill);
-  background: color-mix(in oklab, var(--surface-2) 70%, transparent);
+  border-radius: var(--radius-xs);
   font-family: var(--face-mono);
-  font-size: var(--step--2);
-  color: var(--fg-3);
+  font-size: 0.6rem;
+  line-height: 1.5;
+  color: var(--fg-2);
   white-space: nowrap;
-  transition:
-    border-color var(--dur-1) var(--ease),
-    color var(--dur-1) var(--ease);
-}
-
-.tags:hover .tag {
-  border-color: var(--hair-2);
-}
-
-.tag-accent {
-  border-color: var(--accent-line);
-  color: var(--accent);
-  background: var(--accent-soft);
 }
 
 /* --------------------------------------------------------------------------
-   Entries — the shared record layout for research, projects, and the CV
+   Entries — one role per card on /experience, with its dates alongside.
+   The same card surface as everywhere else.
    -------------------------------------------------------------------------- */
 
 .entries {
-  position: relative;
   display: grid;
-}
-
-/* The rule the entry dots sit on. Faded at both ends so it reads as a
-   timeline rather than a border. */
-@media (min-width: 52.001rem) {
-  .entries::before {
-    content: '';
-    position: absolute;
-    top: 0.4rem;
-    bottom: 1.5rem;
-    left: calc(-1.35rem + 2px);
-    width: 1px;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      var(--hair) 8%,
-      var(--hair) 88%,
-      transparent
-    );
-  }
+  gap: 1.25rem;
 }
 
 .entry {
-  position: relative;
   display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr);
-  gap: var(--space-s) var(--space-l);
-  padding-block: clamp(1.5rem, 3vw, 2.4rem);
-  border-top: 1px solid var(--hair);
-}
-
-.entry:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-/* A dot on the timeline rule, lit on hover. */
-.entry::before {
-  content: '';
-  position: absolute;
-  top: clamp(1.5rem, 3vw, 2.4rem);
-  left: -1.35rem;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--hair-3);
+  grid-template-columns: 10rem minmax(0, 1fr);
+  gap: 0.75rem var(--space-l);
+  padding: clamp(1.35rem, 2.4vw, 1.9rem);
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+  background: var(--surface);
   transition:
-    background var(--dur-2) var(--ease),
-    box-shadow var(--dur-2) var(--ease),
-    transform var(--dur-2) var(--ease);
+    border-color var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease);
 }
 
-.entry:hover::before {
-  background: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-soft);
-  transform: scale(1.2);
+.entry:hover {
+  border-color: var(--hair-3);
+  box-shadow: var(--shadow-hover);
 }
 
 .entry-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.3em;
+  gap: 0.35rem;
   font-family: var(--face-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.04em;
-  color: var(--fg-4);
+  font-size: 0.6rem;
+  letter-spacing: 0.075em;
   line-height: 1.6;
+  text-transform: uppercase;
+  color: var(--fg-3);
 }
 
 .entry-period {
-  color: var(--fg-2);
+  color: var(--fg);
   font-variant-numeric: tabular-nums;
 }
 
-.entry-org {
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
 .entry-body > h3 {
-  margin-bottom: 0.25em;
+  margin-bottom: 0.35rem;
+  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+  font-weight: 620;
+  line-height: 1.3;
+  letter-spacing: -0.035em;
 }
 
-.entry-role {
-  margin: 0 0 0.75em;
+.entry-subtitle {
+  margin: 0 0 0.9em;
   font-size: var(--step--1);
   color: var(--fg-3);
 }
 
-.entry-summary {
-  color: var(--fg-2);
-  margin-bottom: 0.9em;
-}
-
 .entry-body ul {
-  margin-bottom: 1em;
+  margin: 0;
   color: var(--fg-2);
-  font-size: var(--step--1);
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.7;
 }
 
 .entry-body ul li::marker {
@@ -1153,11 +759,6 @@ html:not(.js) .hero-name .family::after {
 @media (max-width: 52rem) {
   .entry {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.5rem;
-  }
-
-  .entry::before {
-    display: none;
   }
 
   .entry-meta {
@@ -1173,16 +774,16 @@ html:not(.js) .hero-name .family::after {
 
 .deflist {
   display: grid;
+  border-block: 1px solid var(--hair);
 }
 
 .defrow {
   display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr);
-  gap: 0.4rem var(--space-l);
-  padding-block: 0.85rem;
+  grid-template-columns: 10rem minmax(0, 1fr);
+  gap: 0.5rem var(--space-l);
+  padding-block: 1.1rem;
   border-top: 1px solid var(--hair);
   align-items: baseline;
-  transition: background var(--dur-2) var(--ease);
 }
 
 .defrow:first-child {
@@ -1191,10 +792,10 @@ html:not(.js) .hero-name .family::after {
 
 .defkey {
   font-family: var(--face-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.12em;
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fg-4);
+  color: var(--fg-3);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1202,70 +803,35 @@ html:not(.js) .hero-name .family::after {
   color: var(--fg-2);
 }
 
+/* A value made of short records — a bold line, then a quieter one — as on
+   the resume overview and the home page's experience list. */
+.glance {
+  display: grid;
+  gap: 0.75em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.glance li {
+  margin: 0;
+}
+
+.glance strong {
+  display: block;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.glance-meta {
+  display: block;
+  font-size: var(--step--1);
+  color: var(--fg-3);
+}
+
 @media (max-width: 52rem) {
   .defrow {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* --------------------------------------------------------------------------
-   Marquee — a slow ticker of the toolchain
-   -------------------------------------------------------------------------- */
-
-.marquee {
-  position: relative;
-  overflow: hidden;
-  padding-block: 0.9rem;
-  border-block: 1px solid var(--hair);
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  gap: 2.5rem;
-  animation: marquee 46s linear infinite;
-}
-
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-
-.marquee-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7em;
-  font-family: var(--face-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-4);
-  white-space: nowrap;
-}
-
-.marquee-item::after {
-  content: '';
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0.5;
-}
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    /* The track holds two identical copies; -50% is one seamless lap. */
-    transform: translateX(-50%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
   }
 }
 
@@ -1289,9 +855,9 @@ html:not(.js) .hero-name .family::after {
 }
 
 .footer-sig {
-  font-family: var(--face-display);
   font-size: var(--step-2);
-  letter-spacing: -0.02em;
+  font-weight: 650;
+  letter-spacing: -0.045em;
   color: var(--fg);
   margin-bottom: 0.4em;
 }
@@ -1301,11 +867,11 @@ html:not(.js) .hero-name .family::after {
    anyone navigating by headings. The size here is purely visual. */
 .footer-col h2 {
   font-family: var(--face-mono);
-  font-size: var(--step--2);
+  font-size: 0.63rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fg-4);
+  color: var(--fg-3);
   margin-bottom: 0.9em;
 }
 
@@ -1335,9 +901,10 @@ html:not(.js) .hero-name .family::after {
   padding-top: var(--space-s);
   border-top: 1px solid var(--hair);
   font-family: var(--face-mono);
-  font-size: var(--step--2);
-  letter-spacing: 0.06em;
-  color: var(--fg-4);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
 }
 
 .footer-bottom a {
@@ -1379,16 +946,27 @@ body[data-scroll-locked] {
   transform: none;
 }
 
-/* A heading variant that wipes up from behind its own baseline. */
+/* A heading variant that wipes up from behind its own baseline.
+
+   A clip-path is drawn in the element's own coordinates, so it travels with
+   the element's transform. A fixed clip plus an em offset therefore masked
+   nothing: the heading painted in full, just 0.9em too low, and then slid
+   into place. To hold the edge still while the text rises, the clip has to
+   shrink by exactly what the transform moves — a 100% offset against a 100%
+   bottom inset, on the same timing. The settled clip is a little larger than
+   the box, so ascenders, descenders, and overhangs are never shaved. */
 .js [data-reveal='mask'] {
-  clip-path: inset(0 0 -0.3em 0);
-  transform: translateY(0.9em);
   opacity: 1;
-  transition: transform var(--dur-4) var(--ease);
+  transform: translateY(100%);
+  clip-path: inset(0 -0.25em 100% -0.25em);
+  transition:
+    transform var(--dur-4) var(--ease),
+    clip-path var(--dur-4) var(--ease);
 }
 
 .js [data-reveal='mask'].is-in {
   transform: none;
+  clip-path: inset(-0.25em -0.25em -0.35em -0.25em);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1403,6 +981,13 @@ body[data-scroll-locked] {
 /* --------------------------------------------------------------------------
    Code copy button (injected by scripts/prose.ts)
    -------------------------------------------------------------------------- */
+
+/* The button is positioned against this wrapper rather than the <pre>. The
+   <pre> scrolls sideways, and anything absolutely positioned inside a scroll
+   container scrolls with its content — the button slid off with the code. */
+.code-block {
+  position: relative;
+}
 
 .copy-btn {
   position: absolute;
@@ -1426,9 +1011,17 @@ body[data-scroll-locked] {
     border-color var(--dur-1) var(--ease);
 }
 
-pre:hover .copy-btn,
+.code-block:hover .copy-btn,
 .copy-btn:focus-visible {
   opacity: 1;
+}
+
+/* No hover on touch screens, so no way to reveal it — and an invisible
+   button is still a tap target over the end of the first line of code. */
+@media (hover: none) {
+  .copy-btn {
+    opacity: 1;
+  }
 }
 
 .copy-btn:hover {
@@ -1467,7 +1060,17 @@ pre:hover .copy-btn,
 }
 
 /* Theme change: the new palette is revealed as a circle growing out of the
-   toggle. `--reveal-*` are written by scripts/theme.ts before the swap. */
+   toggle. `--reveal-*` are written by scripts/theme.ts before the swap.
+
+   The page has to be a single snapshot for that. `main` and the header carry
+   `view-transition-name`s permanently, for page navigation, so a theme change
+   also captured them as groups of their own: the header crossfaded, the
+   content ran the page-change lift above, and the circle only showed in the
+   margins around them. */
+:root[data-theme-transition] [data-astro-transition-scope] {
+  view-transition-name: none;
+}
+
 :root[data-theme-transition]::view-transition-old(root) {
   animation: none;
   mix-blend-mode: normal;
@@ -1490,18 +1093,19 @@ pre:hover .copy-btn,
 }
 
 /* --------------------------------------------------------------------------
-   Note / callout used on the CV and 404
+   Note / callout
    -------------------------------------------------------------------------- */
 
 .note {
   display: flex;
   gap: 0.8em;
-  padding: var(--space-s);
+  padding: 1rem 1.15rem;
   border: 1px solid var(--hair);
   border-left: 2px solid var(--accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   font-size: var(--step--1);
+  line-height: 1.6;
   color: var(--fg-2);
 }
 
@@ -1511,32 +1115,4 @@ pre:hover .copy-btn,
   flex: none;
   margin-top: 0.15em;
   color: var(--accent);
-}
-
-/* --------------------------------------------------------------------------
-   404
-   -------------------------------------------------------------------------- */
-
-.notfound {
-  display: grid;
-  place-items: center;
-  text-align: center;
-  gap: var(--space-s);
-  padding-block: clamp(5rem, 16vh, 10rem);
-}
-
-.notfound-code {
-  font-family: var(--face-mono);
-  font-size: clamp(5rem, 20vw, 11rem);
-  font-weight: 500;
-  /* Tight leading plus negative margins: the glyphs' own ascent and descent
-     would otherwise open a hole either side of the numerals. */
-  line-height: 0.78;
-  margin-block: -0.08em -0.1em;
-  letter-spacing: -0.04em;
-  color: transparent;
-  background: linear-gradient(180deg, var(--fg) 10%, transparent 92%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  user-select: none;
 }

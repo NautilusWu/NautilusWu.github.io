@@ -1,17 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EW">
+  <!-- The header's monogram tile, with the lime full stop from the titles.
+       Colours are the fg, bg, and lime tokens from tokens.css, as sRGB.
+       (No double hyphens in here: they are not allowed inside XML comments.) -->
   <style>
-    :root { color-scheme: light dark }
-    .ring { fill: none; stroke: #1b1d23; stroke-width: 2.5 }
-    .mark { fill: #1b1d23; font: 500 25px 'Iowan Old Style', Palatino, Georgia, serif }
-    .tick { stroke: #2f4a99; stroke-width: 2.5; stroke-linecap: round }
+    .tile { fill: #121d19 }
+    .mark { fill: #fafaf6; font: 600 24px ui-monospace, 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace }
+    .dot { fill: #c6f18a }
     @media (prefers-color-scheme: dark) {
-      .ring { stroke: #e9ebf0 }
-      .mark { fill: #e9ebf0 }
-      .tick { stroke: #93aaf5 }
+      .tile { fill: #f3f5ec }
+      .mark { fill: #121d19 }
+      .dot { fill: #3c6511 }
     }
   </style>
-  <circle class="ring" cx="32" cy="32" r="29" />
-  <!-- A single fiducial tick, matching the linework language of the site. -->
-  <path class="tick" d="M32 3v7" />
-  <text class="mark" x="32" y="41" text-anchor="middle">EW</text>
+  <rect class="tile" width="64" height="64" rx="14" />
+  <text class="mark" x="29" y="41" text-anchor="middle">EW</text>
+  <circle class="dot" cx="52.5" cy="39" r="3.5" />
 </svg>

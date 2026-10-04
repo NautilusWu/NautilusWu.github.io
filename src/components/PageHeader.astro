@@ -1,22 +1,47 @@
 ---
+/**
+ * The dark band that opens every page except home, in the same language as
+ * the home hero: a mono overline, a bold title ending in the lime full stop,
+ * and an optional lede. Pass it to BaseLayout's `hero` slot so it runs edge to
+ * edge; anything in the default slot (actions, meta, tags) goes under the lede.
+ */
 interface Props {
-  title: string;
   eyebrow: string;
+  /** Makes the eyebrow a link — the article pages point it back at /writing. */
+  eyebrowHref?: string;
+  /** Right-hand side of the overline. */
+  meta?: string;
+  title: string;
   lede?: string;
+  /** The trailing lime full stop. Off for article titles, which are sentences. */
+  dot?: boolean;
 }
 
-const { title, eyebrow, lede } = Astro.props;
+const { eyebrow, eyebrowHref, meta, title, lede, dot = true } = Astro.props;
 ---
 
-<header class="page-head">
-  <p class="eyebrow" data-reveal>
-    {eyebrow}
-  </p>
-  <h1 data-reveal="mask">{title}</h1>
-  {lede && (
-    <p class="lede" data-reveal style="--reveal-delay:90ms">
-      {lede}
-    </p>
-  )}
-  <slot />
+<header class="page-hero band">
+  <div class="shell">
+    <div class="band-overline">
+      {eyebrowHref ? <a href={eyebrowHref}>← {eyebrow}</a> : <span>{eyebrow}</span>}
+      {meta && <span>{meta}</span>}
+    </div>
+
+    <div class="page-hero-body">
+      <h1 data-reveal="mask">
+        {title}
+        {dot && (
+          <span class="title-dot" aria-hidden="true">
+            .
+          </span>
+        )}
+      </h1>
+      {lede && (
+        <p class="page-hero-lede" data-reveal style="--reveal-delay:90ms">
+          {lede}
+        </p>
+      )}
+      <slot />
+    </div>
+  </div>
 </header>

@@ -1,20 +1,18 @@
 ---
 interface Props {
   items: readonly string[];
-  accent?: boolean;
-  class?: string;
   /** Truncate long lists — the rest are announced but not shown. */
   max?: number;
 }
 
-const { items, accent = false, class: className, max } = Astro.props;
+const { items, max } = Astro.props;
 const shown = max ? items.slice(0, max) : items;
 const hidden = items.length - shown.length;
 ---
 
-<ul class:list={['tags', className]}>
+<ul class="tags">
   {shown.map((item) => (
-    <li class:list={['tag', { 'tag-accent': accent }]}>{item}</li>
+    <li class="tag">{item}</li>
   ))}
   {hidden > 0 && (
     <li class="tag" aria-label={`and ${hidden} more`}>

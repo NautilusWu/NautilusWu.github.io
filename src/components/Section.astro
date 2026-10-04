@@ -1,7 +1,8 @@
 ---
 /**
- * A content section with the mono rail on the left. `index` is the number
- * printed in the rail; `label` is the word under it.
+ * A content section, the same on every page: a mono kicker built from
+ * `index` and `label` ("01 / SELECTED WORK"), a bold title, and an optional
+ * `aside` slot shown opposite the title.
  */
 interface Props {
   title?: string;
@@ -12,20 +13,30 @@ interface Props {
 }
 
 const { title, index, label, id, class: className } = Astro.props;
+const kicker = [index, label].filter(Boolean).join(' / ');
+const hasAside = Astro.slots.has('aside');
 ---
 
 <section class:list={['section', className]} id={id}>
-  <div class="section-rail" aria-hidden="true">
-    {index && <span class="rail-index">{index}</span>}
-    {label && <span class="rail-label">{label}</span>}
-  </div>
+  {(kicker || title || hasAside) && (
+    <div class="section-head">
+      <div>
+        {kicker && <p class="section-kicker">{kicker}</p>}
+        {title && (
+          <h2 class="section-title" data-reveal="mask">
+            {title}
+          </h2>
+        )}
+      </div>
+      {hasAside && (
+        <div class="section-aside">
+          <slot name="aside" />
+        </div>
+      )}
+    </div>
+  )}
 
   <div class="section-body">
-    {title && (
-      <h2 class="section-title" data-reveal="mask">
-        {title}
-      </h2>
-    )}
     <slot />
   </div>
 </section>

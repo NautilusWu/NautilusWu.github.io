@@ -34,8 +34,12 @@ export default defineConfig({
 
   prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
 
+  /* Old addresses land somewhere sensible rather than breaking: Research and
+     Projects became Experience, and About became a section of the home page. */
   redirects: {
-    '/experience': '/research',
+    '/research': '/experience',
+    '/projects': '/experience',
+    '/about': '/#about',
     '/cv': '/resume',
     '/notes': '/writing',
   },
@@ -59,16 +63,6 @@ export default defineConfig({
   },
 
   fonts: [
-    {
-      provider: fontProviders.npm(),
-      name: 'Newsreader Variable',
-      cssVariable: '--font-display',
-      weights: ['200 800'],
-      styles: ['normal', 'italic'],
-      subsets: ['latin'],
-      fallbacks: ['Iowan Old Style', 'Palatino Linotype', 'Palatino', 'Georgia', 'serif'],
-      options: { package: '@fontsource-variable/newsreader' },
-    },
     {
       provider: fontProviders.npm(),
       name: 'Inter Variable',

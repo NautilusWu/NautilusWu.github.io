@@ -25,7 +25,9 @@ onReady(() => {
 
   const syncCurrent = () => {
     const path = window.location.pathname.replace(/\/+$/, '') || '/';
-    const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+    // Whole path segments only, so `/writing` is not current on `/writings`.
+    const isCurrent = (href: string) =>
+      href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
 
     document.querySelectorAll<HTMLAnchorElement>('.nav-link, .drawer-link').forEach((link) => {
       const href = link.getAttribute('href') ?? '';
@@ -66,6 +68,11 @@ onReady(() => {
 
   /* — Scroll state ———————————————————————————————————————————— */
 
+  /* In-page jumps scroll smoothly from here on. Added only now that the page
+     is bound — after the router's scroll restoration has run — and removed
+     again by the router with every swap (see `html.smooth-scroll`). */
+  document.documentElement.classList.add('smooth-scroll');
+
   /* `--progress` is maintained unconditionally rather than behind a
      `CSS.supports('animation-timeline', ...)` check.
 
@@ -91,10 +98,8 @@ onReady(() => {
   const onScroll = () => {
     const y = window.scrollY;
 
-    if (header) {
-      if (y > 8) header.dataset.stuck = '';
-      else delete header.dataset.stuck;
-    }
+    // Touch the attribute only when the state flips, not on every event.
+    if (header) header.toggleAttribute('data-stuck', y > 8);
 
     if (progress) {
       progress.style.setProperty(
@@ -132,7 +137,7 @@ onReady(() => {
 
   /* — Mobile drawer ——————————————————————————————————————————— */
 
-  if (drawer && drawerToggle) {
+  if (drawer && drawerToggle && typeof drawer.showModal === 'function') {
     /* `showModal()` gives a focus trap, Escape handling, and an inert page for
        free. All this has to add is the scroll lock and the aria-expanded state
        on the trigger. */
@@ -185,8 +190,13 @@ onReady(() => {
     const wide = window.matchMedia('(min-width: 46.001rem)');
     wide.addEventListener('change', close);
 
+    // Only replace the visible mobile links once their drawer works. This
+    // keeps primary navigation available if JavaScript fails or is disabled.
+    header?.setAttribute('data-drawer-ready', '');
+
     cleanups.push(() => {
       close();
+      header?.removeAttribute('data-drawer-ready');
       drawerToggle.removeEventListener('click', open);
       drawer.removeEventListener('click', onDrawerClick);
       drawer.removeEventListener('close', onClose);

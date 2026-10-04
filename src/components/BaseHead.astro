@@ -1,6 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import { profile } from '../data/site';
+import { latinFontUrl } from '../lib/fonts';
 import { ogRouteFor, personSchema } from '../lib/seo';
 import '../styles/global.css';
 
@@ -35,6 +36,8 @@ const ogImage = new URL(`/og/${ogRoute ?? ogRouteFor(Astro.url.pathname)}.png`, 
 const feed = new URL('/rss.xml', base);
 
 const graph = [personSchema(base.href), ...(schema ? [schema] : [])];
+
+const fontPreloads = [latinFontUrl('--font-sans', '@fontsource-variable/inter')];
 ---
 
 <meta charset="utf-8" />
@@ -46,21 +49,31 @@ const graph = [personSchema(base.href), ...(schema ? [schema] : [])];
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-{/* Self-hosted, latin-subset variable fonts with metric-matched fallbacks.
-    Only the body face is preloaded — the display and mono faces are used
-    below the fold often enough that preloading all three would compete with
-    the document itself. */}
-<Font cssVariable="--font-sans" preload />
-<Font cssVariable="--font-display" />
+{/* Inter serves both headings and body copy. Preload its Latin subset;
+    the mono face loads on demand. See lib/fonts.ts for subset selection. */}
+<Font cssVariable="--font-sans" />
 <Font cssVariable="--font-mono" />
+{fontPreloads.map((href) => (
+  <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />
+))}
 
 {/* Mobile browser chrome matches the page background. These are the sRGB
-    values `--bg` actually resolves to in each theme, measured rather than
-    eyeballed — the dark one was #14171d, noticeably lighter than the real
-    background, which showed as a seam above the page. Keep in step with
-    `--bg` in tokens.css. */}
-<meta name="theme-color" content="#fcfbf8" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#0d0f15" media="(prefers-color-scheme: dark)" />
+    values `--bg` actually resolves to in each theme, converted from the OKLCH
+    tokens rather than eyeballed — a near miss shows as a seam above the page.
+    Keep in step with `--bg` in tokens.css. `data-scheme` lets the theme scripts pin the one
+    that matches a theme chosen with the toggle. */}
+<meta
+  name="theme-color"
+  content="#fafaf6"
+  media="(prefers-color-scheme: light)"
+  data-scheme="light"
+/>
+<meta
+  name="theme-color"
+  content="#14201c"
+  media="(prefers-color-scheme: dark)"
+  data-scheme="dark"
+/>
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" sizes="32x32" href="/favicon.ico" />
@@ -106,6 +119,15 @@ const graph = [personSchema(base.href), ...(schema ? [schema] : [])];
         : window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.dataset.theme = dark ? 'dark' : 'light';
       root.classList.add('js');
+
+      /* A theme chosen with the toggle outranks the OS, so the browser chrome
+         has to follow it too — otherwise dark on a light-mode phone keeps a
+         pale bar above a dark page. Same as `syncThemeColor` in theme.ts. */
+      if (stored) {
+        document.querySelectorAll('meta[name="theme-color"][data-scheme]').forEach((meta) => {
+          meta.media = meta.dataset.scheme === root.dataset.theme ? 'all' : 'not all';
+        });
+      }
     };
 
     apply();

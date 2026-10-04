@@ -11,7 +11,7 @@ interface Props {
   ogRoute?: string;
   ogType?: 'website' | 'article';
   noindex?: boolean;
-  /** Home page: the hero needs to run edge to edge under the header. */
+  /** Home page: everything runs edge to edge, and lays out its own shell. */
   bleed?: boolean;
   class?: string;
 }
@@ -38,13 +38,17 @@ const { bleed = false, class: className, ...head } = Astro.props;
         screen-reader users get no announcement and the link does not really
         skip anything. It is not in the tab order — only a programmatic or
         fragment target. */}
-    <main
-      id="main"
-      tabindex="-1"
-      class:list={[!bleed && 'shell', className]}
-      transition:name="main-content"
-    >
-      <slot />
+    <main id="main" tabindex="-1" class={className} transition:name="main-content">
+      {/* The page header band (see PageHeader) runs edge to edge, above the
+          shell that holds the rest of the page. */}
+      <slot name="hero" />
+      {bleed ? (
+        <slot />
+      ) : (
+        <div class="shell">
+          <slot />
+        </div>
+      )}
     </main>
 
     <Footer />
@@ -52,7 +56,6 @@ const { bleed = false, class: className, ...head } = Astro.props;
     <script>
       import '../scripts/navigation-watchdog';
       import '../scripts/reveal';
-      import '../scripts/spotlight';
     </script>
   </body>
 </html>

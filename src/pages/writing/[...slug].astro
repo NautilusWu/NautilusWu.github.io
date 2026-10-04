@@ -2,6 +2,7 @@
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
 import TagList from '../../components/TagList.astro';
 import Icon from '../../components/Icon.astro';
 import { formatDate, isoDate } from '../../lib/format';
@@ -56,14 +57,14 @@ const schema = articleSchema({
   ogRoute={`writing/${post.id}`}
   schema={schema}
 >
-  <header class="article-head">
-    <p class="eyebrow">
-      <a href="/writing" style="text-decoration:none">
-        Writing
-      </a>
-    </p>
-    <h1 data-reveal="mask">{post.data.title}</h1>
-
+  <PageHeader
+    slot="hero"
+    eyebrow="Writing"
+    eyebrowHref="/writing"
+    meta={`${readingTime} min read`}
+    title={post.data.title}
+    dot={false}
+  >
     <div class="article-meta">
       <time datetime={isoDate(post.data.pubDate)}>{formatDate(post.data.pubDate)}</time>
       <span class="dot" aria-hidden="true"></span>
@@ -79,12 +80,8 @@ const schema = articleSchema({
       )}
     </div>
 
-    {post.data.tags.length > 0 && (
-      <div style="margin-top:var(--space-s)">
-        <TagList items={post.data.tags} />
-      </div>
-    )}
-  </header>
+    {post.data.tags.length > 0 && <TagList items={post.data.tags} />}
+  </PageHeader>
 
   <div class="article-layout">
     <article class="prose">

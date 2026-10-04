@@ -1,165 +1,169 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
 import Section from '../components/Section.astro';
-import Entry from '../components/Entry.astro';
-import TagList from '../components/TagList.astro';
 import Icon from '../components/Icon.astro';
-import {
-  profile,
-  contact,
-  socials,
-  education,
-  research,
-  projects,
-  skills,
-  awards,
-} from '../data/site';
+import { profile, contact, education, awards } from '../data/site';
+import { formatPeriod, rolesOf, workRoles } from '../lib/experience';
 import { publicFileExists } from '../lib/public-file';
 
-/* Only offer the download if the PDF is actually in `public/`. */
-const hasCv = publicFileExists(contact.cv);
+/* The download only renders once the PDF is actually in `public/`, so a
+   missing file can never ship as a dead link. Said out loud at build time too,
+   because on this page the download is the point. */
+const hasPdf = publicFileExists(contact.resume);
+if (!hasPdf) {
+  console.warn(`[resume] public${contact.resume} not found — "Download PDF" is hidden.`);
+}
 ---
 
 <BaseLayout
-  title="CV"
-  description="Curriculum vitae of Edward Wu — education, research experience, projects, skills, and awards."
+  title="Resume"
+  class="resume-page"
+  description={`Resume of Edward Wu — an overview of education, experience, and honours.${hasPdf ? ' Download the full resume as a PDF.' : ' Read or print the overview and get in touch for the full resume.'}`}
 >
-  <header class="page-head">
-    <p class="eyebrow" data-reveal>
-      Curriculum Vitae
-    </p>
-    <h1 data-reveal="mask" style="font-size:var(--step-5)">
-      {profile.name}
-    </h1>
-
-    <p class="lede" data-reveal>
-      {profile.discipline.join(' · ')}
-      <br />
-      {profile.affiliation} · {profile.location}
-    </p>
-
+  <PageHeader
+    slot="hero"
+    eyebrow="Resume"
+    meta={profile.location}
+    title={profile.name}
+    lede={`Data science at the University of Michigan, focused on AI and machine learning — from making models fast to building the full-stack software around them. ${hasPdf ? 'Read the overview below or download the full resume.' : 'Read the overview below or get in touch for the full resume.'}`}
+  >
     <div class="hero-actions no-print" data-reveal style="--reveal-delay:120ms">
-      {hasCv && (
-        <a class="btn btn-primary" href={contact.cv} download>
+      {hasPdf && (
+        <a class="btn btn-primary" href={contact.resume} download>
           Download PDF
           <Icon name="download" />
         </a>
       )}
-      <button class="btn" type="button" data-print>
-        <Icon name="printer" />
-        Print
-      </button>
+      {!hasPdf && (
+        <button class="btn btn-primary" type="button" data-print-resume hidden>
+          Print / save PDF
+          <Icon name="printer" />
+        </button>
+      )}
       <a class="btn btn-quiet" href={`mailto:${contact.email}`}>
         <Icon name="mail" />
         {contact.email}
       </a>
     </div>
 
-    <p class="note no-print" data-reveal style="margin-top:var(--space-m);max-width:52ch">
-      <Icon name="info" />
-      <span>
-        This page is the CV — it has its own print stylesheet, so <strong>Print</strong> produces a
-        clean document with no navigation, no colour, and no wasted margins.
-      </span>
-    </p>
-  </header>
+    {!hasPdf && (
+      <p class="note no-print" data-reveal style="max-width:52ch">
+        <Icon name="info" />
+        <span>
+          Save this overview as a PDF using your browser's print dialog. Email me for the full
+          resume.
+        </span>
+      </p>
+    )}
+    <p class="resume-print-contact">{contact.email}</p>
+  </PageHeader>
 
-  <Section title="Contact" index="01" label="Reach me">
+  <Section title="At a glance" index="01" label="Summary">
     <div class="deflist">
-      {socials.map((social) => (
+      <div class="defrow" data-reveal>
+        <span class="defkey">Education</span>
+        <ul class="defval glance">
+          {education.map((item) => (
+            <li>
+              <strong>{item.degree}</strong>
+              <span class="glance-meta">
+                {item.school} · {item.period}
+                {item.gpa && ` · GPA ${item.gpa}`}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {[
+        { label: 'Experience', roles: workRoles },
+        { label: 'Leadership', roles: rolesOf('leadership') },
+      ].map((row) => (
         <div class="defrow" data-reveal>
-          <span class="defkey">{social.label}</span>
-          <span class="defval">
-            <a
-              href={social.href}
-              rel={social.href.startsWith('mailto:') ? 'me' : 'me noopener'}
-              target={social.href.startsWith('mailto:') ? undefined : '_blank'}
-            >
-              {social.handle}
-            </a>
-          </span>
+          <span class="defkey">{row.label}</span>
+          <ul class="defval glance">
+            {row.roles.map((role) => (
+              <li>
+                <strong>
+                  {role.role} — {role.org}
+                </strong>
+                <span class="glance-meta">
+                  {formatPeriod(role)} · {role.location}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       ))}
+
       <div class="defrow" data-reveal>
-        <span class="defkey">Location</span>
-        <span class="defval">{profile.location}</span>
+        <span class="defkey">Honours</span>
+        <ul class="defval glance">
+          {awards.map((award) => (
+            <li>
+              <strong>{award.title}</strong>
+              <span class="glance-meta">
+                {award.org} · {award.year}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
+
+    <p data-reveal>
+      <a class="link-arrow" href="/experience">
+        Experience in full
+      </a>
+    </p>
   </Section>
 
-  <Section title="Education" index="02" label="Training">
-    <div class="entries">
-      {education.map((item) => (
-        <Entry
-          title={item.school}
-          period={item.period}
-          org={item.location}
-          role={item.degree}
-          bullets={item.gpa ? [`GPA: ${item.gpa}`, ...item.details] : item.details}
-        />
-      ))}
-    </div>
-  </Section>
+  <script>
+    import { onReady } from '../scripts/ready';
 
-  <Section title="Research experience" index="03" label="Positions">
-    <div class="entries">
-      {research.map((item) => (
-        <Entry
-          title={item.title}
-          period={item.period}
-          org={item.org}
-          role={item.role}
-          bullets={item.bullets}
-          compact
-        />
-      ))}
-    </div>
-  </Section>
+    onReady(() => {
+      const button = document.querySelector<HTMLButtonElement>('[data-print-resume]');
+      if (!button) return;
 
-  <Section title="Projects" index="04" label="Selected">
-    <div class="entries">
-      {projects.map((project) => (
-        <Entry
-          title={project.title}
-          period={project.period}
-          summary={project.summary}
-          tags={project.tags}
-        />
-      ))}
-    </div>
-  </Section>
-
-  <Section title="Skills" index="05" label="Technical">
-    <div class="deflist">
-      {skills.map((group) => (
-        <div class="defrow" data-reveal>
-          <span class="defkey">{group.group}</span>
-          <span class="defval">
-            <TagList items={group.items} />
-          </span>
-        </div>
-      ))}
-    </div>
-  </Section>
-
-  <Section title="Awards" index="06" label="Honours">
-    <div class="deflist">
-      {awards.map((award) => (
-        <div class="defrow" data-reveal>
-          <span class="defkey">{award.year}</span>
-          <span class="defval">
-            <strong style="font-weight:540;color:var(--fg)">{award.title}</strong>
-            <span style="color:var(--fg-4)"> — {award.org}</span>
-          </span>
-        </div>
-      ))}
-    </div>
-  </Section>
+      const print = () => window.print();
+      button.addEventListener('click', print);
+      button.hidden = false;
+      return () => button.removeEventListener('click', print);
+    });
+  </script>
 </BaseLayout>
 
-<script>
-  // Scoped to this page, so it binds on `astro:page-load` like everything else.
-  document.addEventListener('astro:page-load', () => {
-    document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
-  });
-</script>
+<style>
+  [data-print-resume][hidden],
+  .resume-print-contact {
+    display: none;
+  }
+
+  @media print {
+    :global(.resume-page .page-hero-body) {
+      padding-block: 0 14pt;
+    }
+
+    :global(.resume-page .page-hero h1) {
+      font-size: 22pt;
+      margin-block: 5pt 8pt;
+    }
+
+    :global(.resume-page .page-hero-lede) {
+      font-size: 10pt;
+      line-height: 1.45;
+      max-width: none;
+    }
+
+    :global(.resume-page .section) {
+      break-inside: auto;
+    }
+
+    .resume-print-contact {
+      display: block;
+      margin-block: 8pt 0;
+      font-size: 9pt;
+    }
+  }
+</style>

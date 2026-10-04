@@ -1,97 +1,102 @@
 /* ==========================================================================
    Design tokens
    --------------------------------------------------------------------------
-   Colours are authored in OKLCH so that light/dark pairs can be derived by
-   moving lightness while chroma and hue stay put — greys stay neutral and the
-   accent keeps the same identity in both themes.
+   One palette for every page: green-black ink, a warm off-white ground, and a
+   single signature lime. Neutrals are tinted toward the ink's green (hue
+   ~170) rather than blue, so the dark bands, the text, and the hairlines all
+   read as one family.
 
    Every value a component needs is declared on `:root` first. The dark block
    only *re-points* those same names, so no component ever has to know which
-   theme is active.
+   theme is active — and `.band`, the dark strip that opens every page, reuses
+   the dark values so anything placed inside it (buttons, tags, notes, links)
+   adapts on its own.
    ========================================================================== */
 
 :root {
   color-scheme: light;
 
   /* — Surfaces, from furthest back to furthest forward — */
-  --bg: oklch(98.8% 0.004 85);
-  --bg-sunk: oklch(96.6% 0.006 85);
-  --surface: oklch(100% 0 0);
-  --surface-2: oklch(98% 0.004 85);
+  --bg: oklch(98.4% 0.006 110);
+  --bg-sunk: oklch(96.2% 0.009 115);
+  --surface: oklch(99.7% 0.003 110);
+  --surface-2: oklch(97% 0.008 115);
 
   /* — Text, from loudest to quietest — */
-  --fg: oklch(22% 0.014 265);
-  --fg-2: oklch(38% 0.012 265);
-  --fg-3: oklch(53% 0.011 265);
-  --fg-4: oklch(68% 0.009 265);
+  --fg: oklch(22% 0.018 170);
+  --fg-2: oklch(37% 0.016 170);
+  --fg-3: oklch(51% 0.014 170);
+  --fg-4: oklch(64% 0.012 170);
 
   /* — Linework. The whole design is built out of hairlines. — */
-  --hair: oklch(22% 0.014 265 / 0.11);
-  --hair-2: oklch(22% 0.014 265 / 0.2);
-  --hair-3: oklch(22% 0.014 265 / 0.34);
+  --hair: oklch(22% 0.018 170 / 0.11);
+  --hair-2: oklch(22% 0.018 170 / 0.2);
+  --hair-3: oklch(22% 0.018 170 / 0.34);
 
-  /* — Accents — */
-  --accent: oklch(50% 0.155 259);
-  --accent-hover: oklch(44% 0.16 259);
-  --accent-fg: oklch(100% 0 0);
-  --accent-soft: oklch(50% 0.155 259 / 0.09);
-  --accent-line: oklch(50% 0.155 259 / 0.35);
-  --warm: oklch(64% 0.135 62);
-  --warm-soft: oklch(64% 0.135 62 / 0.14);
+  /* — Accents. `--accent` is the text-safe green for links and marks on the
+       light ground; `--lime` is the signature fill. — */
+  --accent: oklch(46% 0.12 133);
+  --accent-soft: oklch(46% 0.12 133 / 0.1);
+  --accent-line: oklch(46% 0.12 133 / 0.35);
+  --warm: oklch(76% 0.17 128);
+  --lime: #c6f18a;
+  --lime-hover: #d5f5ac;
+  --lime-ink: #172016;
 
-  /* — Elevation. Two stops, both tinted toward the ink hue. — */
-  --shadow-1: 0 1px 1px oklch(22% 0.02 265 / 0.04), 0 2px 6px -2px oklch(22% 0.02 265 / 0.06);
-  --shadow-2: 0 1px 2px oklch(22% 0.02 265 / 0.05), 0 18px 40px -22px oklch(22% 0.02 265 / 0.35);
-  --shadow-pop: 0 2px 4px oklch(22% 0.02 265 / 0.06), 0 28px 60px -28px oklch(22% 0.02 265 / 0.42);
+  /* The dark strip at the top of every page, and the light-lime call-out. */
+  --band-bg: oklch(21% 0.018 172);
+  --callout-bg: #d5edb5;
+  --callout-fg: #1a281b;
+  --callout-muted: #475c3c;
+  --callout-accent: #4d7930;
 
-  /* Hero atmosphere — a wide, very soft wash behind the generative canvas. */
-  --glow-a: oklch(50% 0.155 259 / 0.13);
-  --glow-b: oklch(64% 0.135 62 / 0.1);
+  /* The lift a card gets on hover — cards, experience entries, the pager. */
+  --shadow-hover: 0 8px 24px -18px var(--fg-3);
 
   --grain-opacity: 0.028;
-  --canvas-opacity: 0.9;
+}
+
+/* Dark theme, and the always-dark band. A selector list rather than two
+   copies, so the band can never drift from the dark theme. */
+:root[data-theme='dark'],
+.band {
+  color-scheme: dark;
+
+  --bg: oklch(23% 0.018 172);
+  --bg-sunk: oklch(20% 0.017 172);
+  --surface: oklch(26% 0.02 170);
+  --surface-2: oklch(29% 0.021 170);
+
+  --fg: oklch(96.5% 0.012 115);
+  --fg-2: oklch(83% 0.017 160);
+  --fg-3: oklch(74% 0.02 163);
+  --fg-4: oklch(61% 0.02 165);
+
+  --hair: oklch(95% 0.02 150 / 0.12);
+  --hair-2: oklch(95% 0.02 150 / 0.2);
+  --hair-3: oklch(95% 0.02 150 / 0.34);
+
+  --accent: #c6f18a;
+  --accent-soft: rgb(198 241 138 / 0.12);
+  --accent-line: rgb(198 241 138 / 0.4);
+  --warm: #c6f18a;
+
+  --grain-opacity: 0.05;
 }
 
 :root[data-theme='dark'] {
-  color-scheme: dark;
-
-  --bg: oklch(17% 0.012 265);
-  --bg-sunk: oklch(14.5% 0.012 265);
-  --surface: oklch(20.6% 0.013 265);
-  --surface-2: oklch(23.5% 0.014 265);
-
-  --fg: oklch(95% 0.005 265);
-  --fg-2: oklch(82% 0.008 265);
-  --fg-3: oklch(66% 0.011 265);
-  --fg-4: oklch(52% 0.012 265);
-
-  --hair: oklch(95% 0.005 265 / 0.12);
-  --hair-2: oklch(95% 0.005 265 / 0.2);
-  --hair-3: oklch(95% 0.005 265 / 0.34);
-
-  --accent: oklch(77% 0.12 255);
-  --accent-hover: oklch(84% 0.11 255);
-  --accent-fg: oklch(17% 0.02 265);
-  --accent-soft: oklch(77% 0.12 255 / 0.14);
-  --accent-line: oklch(77% 0.12 255 / 0.4);
-  --warm: oklch(80% 0.11 68);
-  --warm-soft: oklch(80% 0.11 68 / 0.16);
-
-  --shadow-1: 0 1px 1px oklch(0% 0 0 / 0.3), 0 2px 6px -2px oklch(0% 0 0 / 0.4);
-  --shadow-2: 0 1px 2px oklch(0% 0 0 / 0.4), 0 20px 44px -24px oklch(0% 0 0 / 0.8);
-  --shadow-pop: 0 2px 6px oklch(0% 0 0 / 0.45), 0 30px 64px -30px oklch(0% 0 0 / 0.9);
-
-  --glow-a: oklch(62% 0.16 262 / 0.2);
-  --glow-b: oklch(70% 0.13 40 / 0.12);
-
-  --grain-opacity: 0.05;
-  --canvas-opacity: 1;
+  /* A touch deeper than the dark page, so the band still reads as a band. */
+  --band-bg: oklch(19% 0.017 172);
+  --callout-bg: oklch(30% 0.055 135);
+  --callout-fg: oklch(96% 0.03 125);
+  --callout-muted: oklch(84% 0.04 130);
+  --callout-accent: #c6f18a;
 }
 
 :root {
   /* — Type families. The `--font-*` values come from Astro's font pipeline
        (see astro.config.mjs) and already include metric-matched fallbacks. — */
-  --face-display: var(--font-display);
+  --face-display: var(--font-sans);
   --face-sans: var(--font-sans);
   --face-mono: var(--font-mono);
 
@@ -102,33 +107,27 @@
   --step-1: clamp(1.2rem, 1.13rem + 0.351vw, 1.413rem);
   --step-2: clamp(1.44rem, 1.331rem + 0.545vw, 1.771rem);
   --step-3: clamp(1.728rem, 1.563rem + 0.825vw, 2.228rem);
-  --step-4: clamp(2.074rem, 1.831rem + 1.213vw, 2.809rem);
-  --step-5: clamp(2.488rem, 2.137rem + 1.757vw, 3.553rem);
   --step-6: clamp(2.986rem, 2.485rem + 2.507vw, 4.502rem);
 
   /* — Space scale — */
-  --space-2xs: clamp(0.25rem, 0.24rem + 0.05vw, 0.28rem);
   --space-xs: clamp(0.5rem, 0.48rem + 0.11vw, 0.57rem);
   --space-s: clamp(1rem, 0.96rem + 0.22vw, 1.13rem);
   --space-m: clamp(1.5rem, 1.43rem + 0.33vw, 1.7rem);
   --space-l: clamp(2rem, 1.91rem + 0.43vw, 2.26rem);
   --space-xl: clamp(3rem, 2.87rem + 0.65vw, 3.4rem);
   --space-2xl: clamp(4rem, 3.83rem + 0.87vw, 4.53rem);
-  --space-3xl: clamp(6rem, 5.74rem + 1.3vw, 6.79rem);
 
   /* — Rhythm — */
   --measure: 62ch;
   --gutter: clamp(1.25rem, 4vw, 3rem);
   --shell: 74rem;
-  --shell-narrow: 46rem;
-  --section-gap: clamp(2.75rem, 5vw, 4.5rem);
-  --rail: 8.5rem;
+  --section-gap: clamp(3.5rem, 6vw, 5.5rem);
 
-  /* — Shape — */
-  --radius-xs: 6px;
-  --radius-sm: 9px;
-  --radius: 14px;
-  --radius-lg: 20px;
+  /* — Shape. Small and squared-off: tags, buttons, cards. — */
+  --radius-xs: 4px;
+  --radius-sm: 7px;
+  --radius: 10px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
 
   /* — Motion. One easing vocabulary, used everywhere. — */
@@ -140,8 +139,6 @@
   --dur-3: 420ms;
   --dur-4: 720ms;
 
-  --z-canvas: 0;
-  --z-content: 1;
   --z-header: 60;
   --z-overlay: 90;
   --z-modal: 100;

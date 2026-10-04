@@ -9,8 +9,9 @@ import { onReady, prefersReducedMotion } from './ready';
  *    with `getBoundingClientRect`. An IntersectionObserver's first callback is
  *    an async task the browser is free to defer — under load, or in a
  *    background tab, it can be a long way off — and the first screen of the
- *    page must never wait on that. The elements still animate, because the
- *    class lands after the initial paint.
+ *    page must never wait on that. The elements still animate even when this
+ *    runs before the first paint: each measurement forces a style pass with
+ *    the element still hidden, so the class starts a transition from there.
  * 2. Everything below the fold goes to one shared observer, and is unobserved
  *    the moment it lands, so the cost decays to zero as you read.
  */

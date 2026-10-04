@@ -23,12 +23,10 @@ const { title, description, pubDate, tags } = post.data;
   <p>{description}</p>
 
   <div class="card-foot">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <TagList items={tags} max={3} />
-      <span class="read-more" aria-hidden="true">
-        Read <Icon name="arrow" class="icon-arrow" size="0.9em" />
-      </span>
-    </div>
+    <TagList items={tags} max={3} />
+    <span class="read-more" aria-hidden="true">
+      Read <Icon name="arrow" class="icon-arrow" size="0.9em" />
+    </span>
   </div>
 </a>
 
@@ -41,7 +39,7 @@ const { title, description, pubDate, tags } = post.data;
     font-size: var(--step--2);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--fg-4);
+    color: var(--fg-3);
     transition: color var(--dur-1) var(--ease);
   }
 

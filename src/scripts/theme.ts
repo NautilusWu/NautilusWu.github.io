@@ -13,8 +13,18 @@ const STORAGE_KEY = 'theme';
 
 type Theme = 'light' | 'dark';
 
+/** Pins the mobile browser chrome to the chosen theme rather than the OS's. */
+function syncThemeColor(theme: Theme): void {
+  document
+    .querySelectorAll<HTMLMetaElement>('meta[name="theme-color"][data-scheme]')
+    .forEach((meta) => {
+      meta.media = meta.dataset.scheme === theme ? 'all' : 'not all';
+    });
+}
+
 function apply(theme: Theme): void {
   document.documentElement.dataset.theme = theme;
+  syncThemeColor(theme);
   try {
     localStorage.setItem(STORAGE_KEY, theme);
   } catch {

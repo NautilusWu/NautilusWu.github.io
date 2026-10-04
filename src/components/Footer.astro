@@ -46,7 +46,12 @@ const year = new Date().getFullYear();
             </li>
           ))}
           <li>
-            <a href="/rss.xml">RSS</a>
+            {/* Not a page: without these the router fetched the feed, found
+                it wasn't HTML, and loaded it a second time — and viewport
+                prefetching fetched it whenever the footer scrolled in. */}
+            <a href="/rss.xml" data-astro-reload data-astro-prefetch="false">
+              RSS
+            </a>
           </li>
         </ul>
       </div>

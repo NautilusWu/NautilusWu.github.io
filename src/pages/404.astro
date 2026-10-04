@@ -1,32 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
 import Icon from '../components/Icon.astro';
 import { nav } from '../data/site';
+
+/* `ogRoute="home"` below: derived from the path, the social card would be
+   `/og/404.png`, which is never generated. */
 ---
 
-<BaseLayout title="Not found" description="This page does not exist." noindex>
-  <section class="notfound">
-    <p class="eyebrow eyebrow-plain">Error 404</p>
-    <p class="notfound-code" aria-hidden="true">
-      404
-    </p>
-
-    <h1 style="font-size:var(--step-4)">Nothing measured here</h1>
-
-    <p class="lede" style="margin:0 auto">
-      That page doesn't exist — the signal was below threshold. Try one of these instead.
-    </p>
-
-    <div class="hero-actions" style="justify-content:center">
+<BaseLayout title="Not found" description="This page does not exist." ogRoute="home" noindex>
+  <PageHeader
+    slot="hero"
+    eyebrow="Error 404"
+    meta="Page not found"
+    title="Nothing here"
+    lede="That page doesn't exist — it may have moved, or never been written. Try one of these instead."
+  >
+    <div class="hero-actions" data-reveal style="--reveal-delay:120ms">
       <a class="btn btn-primary" href="/">
         Home
         <Icon name="arrow" class="icon-arrow" />
       </a>
-      {nav.slice(1, 4).map((item) => (
-        <a class="btn btn-quiet" href={item.href}>
+      {nav.slice(1).map((item) => (
+        <a class="btn" href={item.href}>
           {item.label}
         </a>
       ))}
     </div>
-  </section>
+  </PageHeader>
 </BaseLayout>

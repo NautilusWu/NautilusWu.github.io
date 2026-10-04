@@ -1,10 +1,13 @@
 /* ==========================================================================
-   Print — /resume is designed to come out of a printer as a real CV
+   Print — any page comes out of a printer clean: no chrome, no colour
    ========================================================================== */
 
 @media print {
+  /* `.band` too: it re-declares the colour tokens for itself, so the page-wide
+     overrides would not reach inside it and the header would print dark. */
   :root,
-  :root[data-theme='dark'] {
+  :root[data-theme='dark'],
+  .band {
     color-scheme: light;
     --bg: #fff;
     --bg-sunk: #fff;
@@ -19,9 +22,8 @@
     --hair-3: #999;
     --accent: #000;
     --accent-line: #999;
-    --shadow-1: none;
-    --shadow-2: none;
-    --shadow-pop: none;
+    --band-bg: #fff;
+    --shadow-hover: none;
     --grain-opacity: 0;
     --section-gap: 14pt;
   }
@@ -36,35 +38,55 @@
   }
 
   body::before,
+  .band::before,
   .site-header,
   .site-footer,
   .drawer,
-  .hero-glow,
-  .hero-grid,
-  .hero-canvas,
   .no-print {
     display: none !important;
   }
 
-  .shell,
-  .shell-narrow {
+  .shell {
     width: 100%;
   }
 
-  /* The rail collapses so the CV uses the full width of the page. */
+  .band {
+    background: #fff;
+  }
+
+  .band-overline {
+    padding-block: 0 6pt;
+  }
+
+  .page-hero-body {
+    padding-block: 10pt 6pt;
+  }
+
+  .page-hero h1 {
+    font-size: 22pt;
+  }
+
   .section {
-    grid-template-columns: 5.5rem minmax(0, 1fr);
-    gap: 0 1rem;
     padding-block: 10pt;
     break-inside: avoid;
   }
 
-  .section::before {
-    display: none;
+  .section-head {
+    margin-bottom: 6pt;
   }
 
-  .section-rail {
-    position: static;
+  .section-kicker {
+    margin-bottom: 2pt;
+  }
+
+  .section-title {
+    font-size: 13pt;
+  }
+
+  .entry,
+  .card {
+    border-color: #ccc;
+    box-shadow: none;
   }
 
   .entry,
@@ -76,10 +98,6 @@
   .entry {
     padding-block: 7pt;
     grid-template-columns: 8.5rem minmax(0, 1fr);
-  }
-
-  .entry::before {
-    display: none;
   }
 
   h1 {
