@@ -619,6 +619,10 @@
   color: var(--accent);
 }
 
+.interest-body {
+  white-space: pre-line;
+}
+
 .card h3 {
   margin-bottom: 0.65rem;
   font-size: clamp(1.1rem, 1.55vw, 1.35rem);

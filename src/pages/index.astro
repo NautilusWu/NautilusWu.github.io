@@ -134,17 +134,14 @@ const nextIndex = () => String(++section).padStart(2, '0');
 
     <Section index={nextIndex()} label="At the intersection" title="Three ways I think.">
       <Fragment slot="aside">
-        From a question to a model,
+        Understand the problem, pick the right tool,
         <br />
-        from a model to something people use.
+        and ship something that works.
       </Fragment>
       <div class="focus-grid">
         {focus.map((item, index) => (
           <article class="focus-item" data-reveal style={`--reveal-delay:${index * 70}ms`}>
-            <span class="focus-number">
-              0{index + 1}
-              <Icon name={index === 0 ? 'spark' : index === 1 ? 'arrow' : 'clock'} />
-            </span>
+            <span class="focus-number">0{index + 1}</span>
             <h3>{item.title}</h3>
             <p>{item.body}</p>
             <p class="focus-tools">{item.tags.join(' / ')}</p>
@@ -172,7 +169,7 @@ const nextIndex = () => String(++section).padStart(2, '0');
           <article class="card" data-reveal style={`--reveal-delay:${index * 70}ms`}>
             <Icon name={item.icon} class="card-icon" size="1.5rem" />
             <h3>{item.title}</h3>
-            <p>{item.body}</p>
+            <p class="interest-body">{item.body}</p>
           </article>
         ))}
       </div>

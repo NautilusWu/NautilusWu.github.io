@@ -197,18 +197,10 @@
 }
 
 .focus-number {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: block;
   margin-bottom: 1.5rem;
   font: 0.68rem var(--face-mono);
   color: var(--fg-3);
-}
-
-.focus-number svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: var(--accent);
 }
 
 .focus-item h3 {

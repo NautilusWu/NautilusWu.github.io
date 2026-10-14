@@ -6,7 +6,7 @@ import type { APIRoute } from 'astro';
  * stale the day the domain changes.
  */
 export const GET: APIRoute = ({ site }) => {
-  const sitemap = new URL('/sitemap-index.xml', site ?? 'https://edwardwu.dev').href;
+  const sitemap = new URL('/sitemap-index.xml', site ?? 'https://nautiluswu.github.io').href;
 
   /* `/og/` is deliberately NOT disallowed. Those are the Open Graph cards, and
      the crawlers that fetch them to build a link preview — Twitterbot, Slack,

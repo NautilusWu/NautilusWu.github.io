@@ -83,17 +83,17 @@ export const pages = {
 export const focus = [
   {
     title: 'AI & Machine Learning',
-    body: 'Generative models and the systems that run them: honest baselines first, then profiling, quantization, and decoding strategies until inference is genuinely fast.',
+    body: 'Large language models and the systems around them: honest baselines first, then profiling, quantization, and decoding strategies for fast inference, and agentic workflows that orchestrate subagents and tools.',
     tags: ['PyTorch', 'Hugging Face', 'OpenCV'],
   },
   {
     title: 'Data Science',
-    body: 'Turning messy data into answers you can defend — from statistical analysis to factor research and backtested equity strategies.',
+    body: 'Turning messy data into answers you can defend: quantifying the problem, testing ideas through backtests, and using the evidence to choose better actions for the future.',
     tags: ['Python', 'Pandas', 'SQL'],
   },
   {
     title: 'Full-Stack Development',
-    body: 'End-to-end web software, from data and APIs to a fast, accessible front end — this site included.',
+    body: 'End-to-end web software, from data and APIs to a fast, accessible front end.',
     tags: ['TypeScript', 'Astro', 'Docker'],
   },
 ] as const;
@@ -213,7 +213,6 @@ export const skills = [
 ] as const;
 
 export const awards = [
-  { title: 'James B. Angell Scholar', org: 'University of Michigan', year: '2025' },
   { title: 'University Honors', org: 'University of Michigan', year: '2024' },
 ] as const;
 
@@ -222,25 +221,26 @@ export const interests = [
   {
     title: 'Basketball',
     icon: 'basketball',
-    body: 'Pickup games and time at the gym. Reading the floor and adjusting on the fly is not far from debugging under pressure.',
+    body: "I didn't make it as a pro, but basketball taught me a lot about team cohesion. These days I'm working on jumping higher, shooting more accurately on the move, and controlling my body.",
   },
   {
     title: 'Philosophy',
     icon: 'book',
-    body: 'Questions about knowledge, judgment, and how we decide what counts as a good answer — useful habits when a model sounds confident.',
+    body: "I'm curious about how social common sense forms.\nWhy do so many people hold on to beliefs that seem wrong?\nHow do cultures meet and blend into something new?",
   },
   {
     title: 'Cooking',
     icon: 'pot',
-    body: 'Cooking for myself and friends. A recipe is an algorithm with taste-testing, and every meal is another chance to iterate.',
+    body: 'Cooking for my family and friends.\nI treat cooking like programming, with ingredients as the variables I control. (Nerddd alert!)',
   },
 ] as const;
 
 /** The dated "Now" block on the home page. */
 export const now = {
-  updated: '2026-09-01',
+  updated: '2026-10-14',
   items: [
-    'Benchmarking quantization and speculative decoding on open-source large models to see what actually speeds up inference.',
-    "Preparing master's and PhD applications in AI, computer science, and quantitative finance for autumn 2027 entry.",
+    'Optimizing local LLM serving: quantization, speculative decoding, and measuring what actually makes inference faster.',
+    'Researching subagents: how an AI agent can split a complex task across smaller, specialized agents and combine their results.',
+    "Preparing master's and PhD applications in computer science, AI + X, and finance for autumn 2027 entry.",
   ],
 } as const;

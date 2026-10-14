@@ -15,9 +15,9 @@ import sitemap from '@astrojs/sitemap';
  *   the view transitions in `BaseLayout` feel instant.
  */
 export default defineConfig({
-  // TODO: point this at your real domain — it drives canonical URLs,
-  // sitemap.xml, the RSS feed, and Open Graph image URLs.
-  site: 'https://edwardwu.dev',
+  // GitHub Pages user site. It drives canonical URLs, sitemap.xml, the RSS
+  // feed, and Open Graph image URLs — change it if the site moves to a custom domain.
+  site: 'https://nautiluswu.github.io',
 
   integrations: [
     mdx(),

@@ -1,4 +1,4 @@
-# edwardwu.dev
+# nautiluswu.github.io
 
 A static personal / academic site built with [Astro](https://astro.build). **No framework
 runtime ships to the browser** — every page is HTML, shared styles, and a handful of small

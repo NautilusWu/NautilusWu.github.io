@@ -48,13 +48,13 @@
           <xsl:for-each select="/rss/channel/item">
             <article>
               <time><xsl:value-of select="substring(pubDate, 6, 11)" /></time>
-              <h2><a href="{link}"><xsl:value-of select="title" /></a></h2>
+              <h2><a href="{concat('/', substring-after(substring-after(link, '://'), '/'))}"><xsl:value-of select="title" /></a></h2>
               <p class="desc"><xsl:value-of select="description" /></p>
             </article>
           </xsl:for-each>
 
           <footer>
-            <a href="{/rss/channel/link}">← Back to the site</a>
+            <a href="/">← Back to the site</a>
           </footer>
         </main>
       </body>
