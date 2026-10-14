@@ -19,14 +19,14 @@ if (!hasPdf) {
 <BaseLayout
   title="Resume"
   class="resume-page"
-  description={`Resume of Edward Wu — an overview of education, experience, and honours.${hasPdf ? ' Download the full resume as a PDF.' : ' Read or print the overview and get in touch for the full resume.'}`}
+  description={`Resume of Edward Wu — an overview of education, experience, and honours.${hasPdf ? ' Download the full resume as a PDF.' : ' Read the overview and get in touch for the full resume.'}`}
 >
   <PageHeader
     slot="hero"
     eyebrow="Resume"
     meta={profile.location}
     title={profile.name}
-    lede={`Data science at the University of Michigan, focused on AI and machine learning — from making models fast to building the full-stack software around them. ${hasPdf ? 'Read the overview below or download the full resume.' : 'Read the overview below or get in touch for the full resume.'}`}
+    lede={`Data science at the University of Michigan. ${hasPdf ? 'Read the overview below or download the full resume.' : 'Read the overview below or get in touch for the full resume.'}`}
   >
     <div class="hero-actions no-print" data-reveal style="--reveal-delay:120ms">
       {hasPdf && (
@@ -35,27 +35,12 @@ if (!hasPdf) {
           <Icon name="download" />
         </a>
       )}
-      {!hasPdf && (
-        <button class="btn btn-primary" type="button" data-print-resume hidden>
-          Print / save PDF
-          <Icon name="printer" />
-        </button>
-      )}
       <a class="btn btn-quiet" href={`mailto:${contact.email}`}>
         <Icon name="mail" />
         {contact.email}
       </a>
     </div>
 
-    {!hasPdf && (
-      <p class="note no-print" data-reveal style="max-width:52ch">
-        <Icon name="info" />
-        <span>
-          Save this overview as a PDF using your browser's print dialog. Email me for the full
-          resume.
-        </span>
-      </p>
-    )}
     <p class="resume-print-contact">{contact.email}</p>
   </PageHeader>
 
@@ -118,24 +103,9 @@ if (!hasPdf) {
       </a>
     </p>
   </Section>
-
-  <script>
-    import { onReady } from '../scripts/ready';
-
-    onReady(() => {
-      const button = document.querySelector<HTMLButtonElement>('[data-print-resume]');
-      if (!button) return;
-
-      const print = () => window.print();
-      button.addEventListener('click', print);
-      button.hidden = false;
-      return () => button.removeEventListener('click', print);
-    });
-  </script>
 </BaseLayout>
 
 <style>
-  [data-print-resume][hidden],
   .resume-print-contact {
     display: none;
   }

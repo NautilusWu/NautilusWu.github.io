@@ -70,8 +70,8 @@ set `draft: true` to hide a post without deleting it.
 2. `site` in [`astro.config.mjs`](astro.config.mjs) — it drives canonical URLs, the
    sitemap, the RSS feed, and Open Graph image URLs.
 3. Drop your resume at `public/edward-wu-resume.pdf`. The download button only renders
-   when that file actually exists. Without it, `/resume` offers a print/save-PDF action
-   for the overview and an email link for requesting the full resume.
+   when that file actually exists. Without it, `/resume` shows only an email link for
+   requesting the full resume.
 4. `education[].gpa` — fill it in or leave it empty to omit the line.
 
 ## Structure
@@ -158,10 +158,9 @@ the theme.
 `prefers-reduced-motion`.
 
 **Print.** Every page has a print stylesheet: chrome hidden, colour dropped, entries kept off
-page breaks, and link destinations spelled out since a printed link can't be clicked. When a
-full resume PDF is unavailable, `/resume` offers its overview through the browser's print
-dialog, including the contact email in the printed output. Adding the PDF restores the
-download action.
+page breaks, and link destinations spelled out since a printed link can't be clicked. A
+printed `/resume` includes the contact email. Adding the resume PDF enables the download
+action.
 
 ## Deploying
 

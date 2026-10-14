@@ -24,18 +24,17 @@ export const profile = {
   /** Small status line in the hero. Set to '' to hide it. */
   status: 'Applying to MS & PhD programs · open to 2027 internships & full-time roles',
   /** The large line under the name in the home hero. */
-  tagline: 'Never stop optimizing!',
-  /** The paragraph under the tagline. */
-  summary:
-    'I automate mechanical work, make backends fast, and build full-stack software that people can use with ease.',
+  tagline: 'Never stop optimizing.',
+  /** Chinese line under the tagline. Set to '' to hide it. */
+  taglineZh: '时间就是金钱，效率就是生命。',
   /** One sentence. Used for <meta name="description"> and link previews. */
   description:
-    'Edward Wu — data science student at the University of Michigan working on AI and machine learning, from making models fast to building the full-stack software around them.',
+    'Edward Wu — data science student at the University of Michigan who solves problems with AI and machine learning and builds the full-stack software that puts the solutions in people\'s hands.',
   /** The "About me" section on the home page. */
   bio: [
-    'I work on AI and machine learning, especially how models are built, evaluated, and optimized — and I build the full-stack software that puts them in front of people.',
-    'The problems I like are the ones where careful measurement and a fast implementation have to meet in the middle: getting a generative model to run an order of magnitude quicker on the hardware already sitting in front of me, or turning a rough prototype into something people can actually use.',
-    "Next, I'm applying to graduate programs — master's and PhD — in AI, computer science, and quantitative finance.",
+    'I start from the problem and use technology to solve it. I choose, evaluate, and optimize the right models, then use full-stack engineering to turn the solution into a product others can use efficiently. LLMs are not always reliable, so I write programs that check and verify their output to improve accuracy. The goal is to use each technique where it is strongest.',
+    'Outside of work, I play basketball, hit the gym, and cook. They keep giving me small problems worth solving with technology, such as tracking my training progress and analyzing my physical data. They also remind me that good software should make everyday life easier.',
+    "Next, I'm applying to graduate programs in AI, computer science, and quantitative finance.",
   ],
 } as const;
 
@@ -84,8 +83,8 @@ export const pages = {
 export const focus = [
   {
     title: 'AI & Machine Learning',
-    body: 'Generative models and the systems that run them: honest baselines first, then profiling, quantization, and kernel work until inference is genuinely fast.',
-    tags: ['PyTorch', 'CUDA', 'Triton'],
+    body: 'Generative models and the systems that run them: honest baselines first, then profiling, quantization, and decoding strategies until inference is genuinely fast.',
+    tags: ['PyTorch', 'Hugging Face', 'OpenCV'],
   },
   {
     title: 'Data Science',
@@ -208,7 +207,7 @@ export const skills = [
   { group: 'Data', items: ['NumPy', 'Pandas', 'SciPy', 'Matplotlib', 'Excel'] },
   {
     group: 'ML Systems',
-    items: ['PyTorch', 'CUDA', 'Triton', 'Hugging Face', 'OpenCV', 'Quantization'],
+    items: ['PyTorch', 'Hugging Face', 'OpenCV', 'Quantization'],
   },
   { group: 'Infrastructure', items: ['Git', 'Linux', 'Docker', 'CMake', 'Slurm', 'LaTeX'] },
 ] as const;
@@ -221,16 +220,19 @@ export const awards = [
 /** The "Away from the keyboard" cards on the home page. */
 export const interests = [
   {
-    title: 'Computational Art',
-    body: 'Generative drawing, plotter art, and simulation as a visual medium.',
+    title: 'Basketball',
+    icon: 'basketball',
+    body: 'Pickup games and time at the gym. Reading the floor and adjusting on the fly is not far from debugging under pressure.',
   },
   {
-    title: 'Reading',
-    body: 'History of science, long-form technical writing, and the occasional novel that has nothing to do with either.',
+    title: 'Philosophy',
+    icon: 'book',
+    body: 'Questions about knowledge, judgment, and how we decide what counts as a good answer — useful habits when a model sounds confident.',
   },
   {
-    title: 'Outdoors',
-    body: 'Hiking and long walks around Ann Arbor. Most of my ideas about a stuck problem arrive somewhere in the third mile.',
+    title: 'Cooking',
+    icon: 'pot',
+    body: 'Cooking for myself and friends. A recipe is an algorithm with taste-testing, and every meal is another chance to iterate.',
   },
 ] as const;
 
@@ -238,7 +240,7 @@ export const interests = [
 export const now = {
   updated: '2026-09-01',
   items: [
-    'Reading through Triton kernels to understand where a fused attention implementation actually wins.',
+    'Benchmarking quantization and speculative decoding on open-source large models to see what actually speeds up inference.',
     "Preparing master's and PhD applications in AI, computer science, and quantitative finance for autumn 2027 entry.",
   ],
 } as const;

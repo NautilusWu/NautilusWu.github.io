@@ -42,7 +42,11 @@ const nextIndex = () => String(++section).padStart(2, '0');
         <p class="home-headline">
           <span>{profile.tagline}</span>
         </p>
-        <p class="home-description">{profile.summary}</p>
+        {profile.taglineZh && (
+          <p class="home-subline" lang="zh-Hans">
+            {profile.taglineZh}
+          </p>
+        )}
         <div class="hero-actions">
           <a class="btn btn-primary" href="/experience">
             See my experience <Icon name="arrow" class="icon-arrow" />
@@ -166,6 +170,7 @@ const nextIndex = () => String(++section).padStart(2, '0');
       <div class="grid grid-3">
         {interests.map((item, index) => (
           <article class="card" data-reveal style={`--reveal-delay:${index * 70}ms`}>
+            <Icon name={item.icon} class="card-icon" size="1.5rem" />
             <h3>{item.title}</h3>
             <p>{item.body}</p>
           </article>

@@ -31,10 +31,10 @@
   color: var(--accent);
 }
 
-.home-description {
-  max-width: 48ch;
-  font-size: 0.96rem;
-  line-height: 1.8;
+.home-subline {
+  margin-top: -0.4rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
   color: var(--fg-2);
 }
 
@@ -298,10 +298,6 @@
 @media (max-width: 62rem) {
   .home-hero h1 {
     font-size: clamp(3.5rem, 8vw, 5.5rem);
-  }
-
-  .home-description {
-    font-size: 0.9rem;
   }
 
   .band-overline {
