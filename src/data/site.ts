@@ -47,7 +47,7 @@ export const contact = {
 
 export const socials = [
   { label: 'Email', handle: contact.email, href: `mailto:${contact.email}` },
-  { label: 'GitHub', handle: '@edwardwu', href: 'https://github.com/edwardwu' },
+  { label: 'GitHub', handle: '@NautilusWu', href: 'https://github.com/NautilusWu' },
   { label: 'LinkedIn', handle: '/in/edwardwu', href: 'https://www.linkedin.com/in/edwardwu' },
 ] as const;
 
