@@ -24,15 +24,6 @@ export const getStaticPaths = (async () => {
       },
     },
     {
-      route: 'experience',
-      card: {
-        kind: 'Experience',
-        title: pages.experience.title,
-        subtitle: pages.experience.lede,
-        tags: ['Professional', 'Teaching', 'Leadership'],
-      },
-    },
-    {
       route: 'writing',
       card: {
         kind: 'Writing',
@@ -46,8 +37,8 @@ export const getStaticPaths = (async () => {
       card: {
         kind: 'Resume',
         title: profile.name,
-        subtitle: `${profile.discipline.join(' · ')} — ${profile.affiliation}`,
-        tags: ['Education', 'Experience', 'Honours'],
+        subtitle: pages.resume.lede,
+        tags: ['Education', 'Experience', 'Teaching', 'Honours'],
       },
     },
     ...posts.map((post) => ({

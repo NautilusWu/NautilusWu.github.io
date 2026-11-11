@@ -696,7 +696,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Entries — one role per card on /experience, with its dates alongside.
+   Entries — one role per card on /resume, with its dates alongside.
    The same card surface as everywhere else.
    -------------------------------------------------------------------------- */
 
@@ -813,7 +813,7 @@
 }
 
 /* A value made of short records — a bold line, then a quieter one — as on
-   the resume overview and the home page's experience list. */
+   the resume and the home page's experience list. */
 .glance {
   display: grid;
   gap: 0.75em;

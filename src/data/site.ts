@@ -1,3 +1,6 @@
+import umichSeal from '../assets/seals/university-of-michigan.svg';
+import uciSeal from '../assets/seals/uc-irvine.svg';
+
 /**
  * ============================================================================
  * Site content
@@ -50,7 +53,6 @@ export const socials = [
 /** The top bar, the mobile menu, and the footer. */
 export const nav = [
   { href: '/', label: 'Home' },
-  { href: '/experience', label: 'Experience' },
   { href: '/writing', label: 'Writing' },
   { href: '/resume', label: 'Resume' },
 ] as const;
@@ -60,11 +62,11 @@ export const nav = [
  * same entry, so the two cannot drift apart.
  */
 export const pages = {
-  experience: {
-    title: "Where I've worked and taught",
-    lede: 'Research and industry internships across AI, quantitative finance, and data analysis — and teaching statistics and Python to 170+ students along the way.',
+  resume: {
+    /* The title is `profile.name`. */
+    lede: 'Data science at the University of Michigan. Research and industry internships across AI, quantitative finance, and data analysis — and teaching statistics and Python to 170+ students along the way.',
     description:
-      'Professional, teaching, and leadership experience of Edward Wu — AI research and quantitative-finance internships, data analysis, and teaching statistics and Python.',
+      'Resume of Edward Wu — education, AI research and quantitative-finance internships, teaching, leadership, honours, and tools.',
   },
   writing: {
     title: 'Thinking out loud',
@@ -192,9 +194,18 @@ export const education = [
   {
     school: 'University of Michigan',
     degree: 'B.S. Data Science',
-    period: '2023 — 2027 (expected)',
+    period: '2025 — 2027 (expected)',
     /** Leave empty to omit the line. */
     gpa: '',
+    /** Shown before the entry on /resume. Public-domain seal from Wikimedia Commons. */
+    seal: umichSeal,
+  },
+  {
+    school: 'University of California, Irvine',
+    degree: 'B.S. Data Science',
+    period: '2023 — 2025',
+    gpa: '',
+    seal: uciSeal,
   },
 ] as const;
 

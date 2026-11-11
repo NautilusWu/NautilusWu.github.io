@@ -17,28 +17,29 @@ npm run build                # static output in dist/
 
 ## Editing the content
 
-The site has four pages: **Home** (the overview — who you are, recent experience, what
-you work on, interests), **Experience** (professional, teaching, and leadership roles),
-**Writing** (a personal blog), and **Resume** (an overview; the full resume is shared by email on request).
+The site has three pages: **Home** (the overview — who you are, recent experience, what
+you work on, interests), **Writing** (a personal blog), and **Resume** (education, every
+professional, teaching, and leadership role in full, honours, and tools). `/experience`
+redirects to `/resume`.
 
 **All content lives in [`src/data/site.ts`](src/data/site.ts).** Pages read from these
 typed exports; only section headings are written in the pages themselves.
 
-| Export             | Used by                                                      |
-| ------------------ | ------------------------------------------------------------ |
-| `profile`          | home hero and bio, page titles, SEO description, Resume      |
-| `contact`          | mail links                                                   |
-| `socials`          | footer, JSON-LD                                              |
-| `nav`              | top bar, mobile menu, footer                                 |
-| `pages`            | Experience and Writing headers, and their link-preview cards |
-| `focus`            | "Three ways I think" on the home page                        |
-| `experience`       | Experience, the home page's recent roles, Resume             |
-| `experienceGroups` | the sections of Experience, in order                         |
-| `education`        | Resume, the home page's affiliation strip                    |
-| `skills`           | "Methods and tools" on Experience                            |
-| `awards`           | Resume                                                       |
-| `interests`        | "Away from the keyboard" on the home page                    |
-| `now`              | the dated "Now" card on the home page                        |
+| Export             | Used by                                                       |
+| ------------------ | ------------------------------------------------------------- |
+| `profile`          | home hero and bio, page titles, SEO description, Resume       |
+| `contact`          | mail links                                                    |
+| `socials`          | footer, JSON-LD                                               |
+| `nav`              | top bar, mobile menu, footer                                  |
+| `pages`            | Resume and Writing headers, and their link-preview cards      |
+| `focus`            | "Three ways I think" on the home page                         |
+| `experience`       | Resume, the home page's recent roles                          |
+| `experienceGroups` | the role sections of Resume, in order                         |
+| `education`        | Resume (with school seals), the home page's affiliation strip |
+| `skills`           | "Methods and tools" on Resume                                 |
+| `awards`           | Resume                                                        |
+| `interests`        | "Away from the keyboard" on the home page                     |
+| `now`              | the dated "Now" card on the home page                         |
 
 **Adding a role:** add an object to `experience` with `kind` (`professional`, `teaching`,
 or `leadership`), `role`, `org`, `location`, `start` and `end` as `YYYY-MM` (leave `end`
@@ -83,7 +84,7 @@ src/
   scripts/                  one small client module per interaction
   lib/                      build-time helpers (experience sorting, OG cards, SEO, dates)
   pages/
-    index, experience, resume, 404
+    index, resume, 404
     writing/                index + [...slug]
     og/[...route].png.ts    build-time Open Graph cards
     rss.xml.ts, robots.txt.ts, manifest.webmanifest.ts
@@ -158,7 +159,7 @@ the theme.
 page breaks, and link destinations spelled out since a printed link can't be clicked. A
 printed `/resume` includes the contact email.
 
-**No resume download.** `/resume` is an overview only; there is deliberately no PDF on the
+**No resume download.** `/resume` is a web page only; there is deliberately no PDF on the
 site. Visitors request the full resume by email. Don't put a resume PDF in `public/`.
 
 ## Deploying

@@ -1,25 +1,34 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Section from '../components/Section.astro';
+import Entry from '../components/Entry.astro';
+import TagList from '../components/TagList.astro';
 import Icon from '../components/Icon.astro';
-import { profile, contact, education, awards } from '../data/site';
-import { formatPeriod, rolesOf, workRoles } from '../lib/experience';
+import { profile, contact, pages, education, experienceGroups, awards, skills } from '../data/site';
+import { formatPeriod, rolesOf } from '../lib/experience';
 
-/* Deliberately no PDF download: the full resume is shared on request only. */
+/* The whole resume on one page: education, every role in full, honours, and
+   tools. Deliberately no PDF download — the file is shared on request only. */
+const page = pages.resume;
+
+const groups = experienceGroups
+  .map((group) => ({ ...group, roles: rolesOf(group.kind) }))
+  .filter((group) => group.roles.length > 0);
+
+/* Sections number themselves, so adding or emptying one never leaves a gap. */
+let section = 0;
+const nextIndex = () => String(++section).padStart(2, '0');
 ---
 
-<BaseLayout
-  title="Resume"
-  class="resume-page"
-  description="Resume of Edward Wu — an overview of education, experience, and honours. Get in touch for the full resume."
->
+<BaseLayout title="Resume" class="resume-page" description={page.description}>
   <PageHeader
     slot="hero"
     eyebrow="Resume"
     meta={profile.location}
     title={profile.name}
-    lede="Data science at the University of Michigan. Read the overview below or get in touch for the full resume."
+    lede={page.lede}
   >
     <div class="hero-actions no-print" data-reveal style="--reveal-delay:120ms">
       <a class="btn btn-quiet" href={`mailto:${contact.email}`}>
@@ -31,70 +40,92 @@ import { formatPeriod, rolesOf, workRoles } from '../lib/experience';
     <p class="resume-print-contact">{contact.email}</p>
   </PageHeader>
 
-  <Section title="At a glance" index="01" label="Summary">
-    <div class="deflist">
-      <div class="defrow" data-reveal>
-        <span class="defkey">Education</span>
-        <ul class="defval glance">
-          {education.map((item) => (
-            <li>
-              <strong>{item.degree}</strong>
-              <span class="glance-meta">
-                {item.school} · {item.period}
-                {item.gpa && ` · GPA ${item.gpa}`}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+  <Section title="Education" index={nextIndex()} label="Degrees" id="education">
+    <ul class="glance schools">
+      {education.map((item) => (
+        <li class="glance-school" data-reveal>
+          {/* Decorative: the school is named right beside it. */}
+          <Image class="school-seal" src={item.seal} alt="" width={48} height={48} />
+          <span>
+            <strong>{item.degree}</strong>
+            <span class="glance-meta">
+              {item.school} · {item.period}
+              {item.gpa && ` · GPA ${item.gpa}`}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Section>
 
-      {[
-        { label: 'Experience', roles: workRoles },
-        { label: 'Leadership', roles: rolesOf('leadership') },
-      ].map((row) => (
+  {groups.map((group) => (
+    <Section title={group.title} index={nextIndex()} label={group.label} id={group.kind}>
+      <div class="entries">
+        {group.roles.map((role) => (
+          <Entry
+            title={role.role}
+            subtitle={role.org}
+            period={formatPeriod(role)}
+            place={role.location}
+            bullets={role.bullets}
+          />
+        ))}
+      </div>
+    </Section>
+  ))}
+
+  <Section title="Honours" index={nextIndex()} label="Recognition" id="honours">
+    <ul class="glance">
+      {awards.map((award) => (
+        <li data-reveal>
+          <strong>{award.title}</strong>
+          <span class="glance-meta">
+            {award.org} · {award.year}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section title="Methods and tools" index={nextIndex()} label="Toolkit" id="skills">
+    <div class="deflist">
+      {skills.map((group) => (
         <div class="defrow" data-reveal>
-          <span class="defkey">{row.label}</span>
-          <ul class="defval glance">
-            {row.roles.map((role) => (
-              <li>
-                <strong>
-                  {role.role} — {role.org}
-                </strong>
-                <span class="glance-meta">
-                  {formatPeriod(role)} · {role.location}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <span class="defkey">{group.group}</span>
+          <span class="defval">
+            <TagList items={group.items} />
+          </span>
         </div>
       ))}
-
-      <div class="defrow" data-reveal>
-        <span class="defkey">Honours</span>
-        <ul class="defval glance">
-          {awards.map((award) => (
-            <li>
-              <strong>{award.title}</strong>
-              <span class="glance-meta">
-                {award.org} · {award.year}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
-
-    <p data-reveal>
-      <a class="link-arrow" href="/experience">
-        Experience in full
-      </a>
-    </p>
   </Section>
 </BaseLayout>
 
 <style>
   .resume-print-contact {
     display: none;
+  }
+
+  .schools {
+    gap: 1.1em;
+  }
+
+  .glance-school {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.9em;
+  }
+
+  /* White disc behind each seal: the UC Irvine seal is thin blue line work
+     on a transparent ground and would vanish on the dark theme. */
+  .school-seal {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 2px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--hair-2);
   }
 
   @media print {

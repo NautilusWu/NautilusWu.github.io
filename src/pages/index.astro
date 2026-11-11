@@ -13,7 +13,7 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 2);
 
-/* The overview shows the most recent work and teaching; /experience has it all. */
+/* The overview shows the most recent work and teaching; /resume has it all. */
 const recentRoles = workRoles.slice(0, 4);
 
 /* Sections number themselves, so hiding one (Writing, while there are no
@@ -48,11 +48,8 @@ const nextIndex = () => String(++section).padStart(2, '0');
           </p>
         )}
         <div class="hero-actions">
-          <a class="btn btn-primary" href="/experience">
-            See my experience <Icon name="arrow" class="icon-arrow" />
-          </a>
-          <a class="btn" href="/resume">
-            View résumé <Icon name="arrow-up-right" />
+          <a class="btn btn-primary" href="/resume">
+            View résumé <Icon name="arrow" class="icon-arrow" />
           </a>
         </div>
         {profile.status && (
@@ -83,7 +80,7 @@ const nextIndex = () => String(++section).padStart(2, '0');
           <small>{education[0].degree}</small>
         </span>
       </div>
-      <a href="/resume">
+      <a href="/resume#education">
         Education &amp; honours <Icon name="arrow-up-right" />
       </a>
     </div>
@@ -112,8 +109,8 @@ const nextIndex = () => String(++section).padStart(2, '0');
     </Section>
 
     <Section index={nextIndex()} label="Experience" title="Where I've worked and taught.">
-      <a slot="aside" class="link-arrow" href="/experience">
-        All experience
+      <a slot="aside" class="link-arrow" href="/resume">
+        Full resume
       </a>
       <div class="deflist">
         {recentRoles.map((role) => (

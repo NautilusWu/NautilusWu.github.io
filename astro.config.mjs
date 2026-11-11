@@ -34,11 +34,13 @@ export default defineConfig({
 
   prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
 
-  /* Old addresses land somewhere sensible rather than breaking: Research and
-     Projects became Experience, and About became a section of the home page. */
+  /* Old addresses land somewhere sensible rather than breaking: Research,
+     Projects, and Experience all became part of Resume, and About became a
+     section of the home page. */
   redirects: {
-    '/research': '/experience',
-    '/projects': '/experience',
+    '/experience': '/resume',
+    '/research': '/resume',
+    '/projects': '/resume',
     '/about': '/#about',
     '/cv': '/resume',
     '/notes': '/writing',
