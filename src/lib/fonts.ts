@@ -19,7 +19,9 @@ import { fontData, type CssVariable } from 'astro:assets';
  * face is found by its position there. If the two ever stop lining up, the
  * build fails instead of quietly preloading the wrong file.
  *
- * Resolved from the working directory for the same reason as `public-file.ts`.
+ * Resolved from the working directory because this module is bundled — its own
+ * `import.meta.url` points into the build output, not into `node_modules`.
+ * Both `astro dev` and `astro build` run from the project root.
  */
 export function latinFontUrl(cssVariable: CssVariable, pkg: string): string {
   const css = readFileSync(join(process.cwd(), 'node_modules', pkg, 'index.css'), 'utf8');

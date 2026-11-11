@@ -19,7 +19,7 @@ npm run build                # static output in dist/
 
 The site has four pages: **Home** (the overview — who you are, recent experience, what
 you work on, interests), **Experience** (professional, teaching, and leadership roles),
-**Writing** (a personal blog), and **Resume** (an overview plus the PDF).
+**Writing** (a personal blog), and **Resume** (an overview; the full resume is shared by email on request).
 
 **All content lives in [`src/data/site.ts`](src/data/site.ts).** Pages read from these
 typed exports; only section headings are written in the pages themselves.
@@ -27,7 +27,7 @@ typed exports; only section headings are written in the pages themselves.
 | Export             | Used by                                                      |
 | ------------------ | ------------------------------------------------------------ |
 | `profile`          | home hero and bio, page titles, SEO description, Resume      |
-| `contact`          | mail links, Resume PDF download                              |
+| `contact`          | mail links                                                   |
 | `socials`          | footer, JSON-LD                                              |
 | `nav`              | top bar, mobile menu, footer                                 |
 | `pages`            | Experience and Writing headers, and their link-preview cards |
@@ -69,10 +69,7 @@ set `draft: true` to hide a post without deleting it.
 1. `contact.email` and the `socials[].href` handles in `src/data/site.ts`.
 2. `site` in [`astro.config.mjs`](astro.config.mjs) — it drives canonical URLs, the
    sitemap, the RSS feed, and Open Graph image URLs.
-3. Drop your resume at `public/edward-wu-resume.pdf`. The download button only renders
-   when that file actually exists. Without it, `/resume` shows only an email link for
-   requesting the full resume.
-4. `education[].gpa` — fill it in or leave it empty to omit the line.
+3. `education[].gpa` — fill it in or leave it empty to omit the line.
 
 ## Structure
 
@@ -159,8 +156,10 @@ the theme.
 
 **Print.** Every page has a print stylesheet: chrome hidden, colour dropped, entries kept off
 page breaks, and link destinations spelled out since a printed link can't be clicked. A
-printed `/resume` includes the contact email. Adding the resume PDF enables the download
-action.
+printed `/resume` includes the contact email.
+
+**No resume download.** `/resume` is an overview only; there is deliberately no PDF on the
+site. Visitors request the full resume by email. Don't put a resume PDF in `public/`.
 
 ## Deploying
 

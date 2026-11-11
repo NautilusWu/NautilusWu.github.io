@@ -5,36 +5,23 @@ import Section from '../components/Section.astro';
 import Icon from '../components/Icon.astro';
 import { profile, contact, education, awards } from '../data/site';
 import { formatPeriod, rolesOf, workRoles } from '../lib/experience';
-import { publicFileExists } from '../lib/public-file';
 
-/* The download only renders once the PDF is actually in `public/`, so a
-   missing file can never ship as a dead link. Said out loud at build time too,
-   because on this page the download is the point. */
-const hasPdf = publicFileExists(contact.resume);
-if (!hasPdf) {
-  console.warn(`[resume] public${contact.resume} not found — "Download PDF" is hidden.`);
-}
+/* Deliberately no PDF download: the full resume is shared on request only. */
 ---
 
 <BaseLayout
   title="Resume"
   class="resume-page"
-  description={`Resume of Edward Wu — an overview of education, experience, and honours.${hasPdf ? ' Download the full resume as a PDF.' : ' Read the overview and get in touch for the full resume.'}`}
+  description="Resume of Edward Wu — an overview of education, experience, and honours. Get in touch for the full resume."
 >
   <PageHeader
     slot="hero"
     eyebrow="Resume"
     meta={profile.location}
     title={profile.name}
-    lede={`Data science at the University of Michigan. ${hasPdf ? 'Read the overview below or download the full resume.' : 'Read the overview below or get in touch for the full resume.'}`}
+    lede="Data science at the University of Michigan. Read the overview below or get in touch for the full resume."
   >
     <div class="hero-actions no-print" data-reveal style="--reveal-delay:120ms">
-      {hasPdf && (
-        <a class="btn btn-primary" href={contact.resume} download>
-          Download PDF
-          <Icon name="download" />
-        </a>
-      )}
       <a class="btn btn-quiet" href={`mailto:${contact.email}`}>
         <Icon name="mail" />
         {contact.email}

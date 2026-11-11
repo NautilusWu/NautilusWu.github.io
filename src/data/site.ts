@@ -9,8 +9,7 @@
  * ┌─ BEFORE YOU DEPLOY ───────────────────────────────────────────────────┐
  * │ 1. `contact.email`, `socials.*.href` — swap in your real handles.     │
  * │ 2. `astro.config.mjs` → `site` — set your real domain.                │
- * │ 3. Drop your resume at `public/edward-wu-resume.pdf`.                 │
- * │ 4. `education[].gpa` — fill in or delete the field.                   │
+ * │ 3. `education[].gpa` — fill in or delete the field.                   │
  * └───────────────────────────────────────────────────────────────────────┘
  */
 
@@ -41,8 +40,6 @@ export const profile = {
 export const contact = {
   // TODO: replace with your real address before deploying.
   email: 'edward.wu@umich.edu',
-  /** The download on /resume. It only renders once this file is in `public/`. */
-  resume: '/edward-wu-resume.pdf',
 } as const;
 
 export const socials = [
