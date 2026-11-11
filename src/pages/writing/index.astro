@@ -23,14 +23,7 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
     meta={posts.length ? `${String(posts.length).padStart(2, '0')} posts` : 'Personal blog'}
     title={page.title}
     lede={page.lede}
-  >
-    <p data-reveal style="--reveal-delay:140ms">
-      <a class="link-arrow" href="/rss.xml" data-astro-reload data-astro-prefetch="false">
-        <Icon name="rss" size="0.9em" />
-        Subscribe via RSS
-      </a>
-    </p>
-  </PageHeader>
+  />
 
   <Section title="All posts" index="01" label="Newest first">
     <TagList slot="aside" items={page.topics} />
@@ -45,7 +38,7 @@ const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
       <p class="note" data-reveal>
         <Icon name="info" />
         <span>
-          Nothing here yet — the first post is on its way. Subscribe via RSS to hear when it lands.
+          Nothing here yet — the first post is on its way.
         </span>
       </p>
     )}

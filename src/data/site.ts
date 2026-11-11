@@ -7,7 +7,7 @@
  * typo in a key is a build error rather than a blank spot on the page.
  *
  * ┌─ BEFORE YOU DEPLOY ───────────────────────────────────────────────────┐
- * │ 1. `contact.email`, `socials.*.href` — swap in your real handles.     │
+ * │ 1. `socials.*.href` — swap in your real handles.                      │
  * │ 2. `astro.config.mjs` → `site` — set your real domain.                │
  * │ 3. `education[].gpa` — fill in or delete the field.                   │
  * └───────────────────────────────────────────────────────────────────────┘
@@ -38,8 +38,7 @@ export const profile = {
 } as const;
 
 export const contact = {
-  // TODO: replace with your real address before deploying.
-  email: 'edward.wu@umich.edu',
+  email: 'g2455064595@gmail.com',
 } as const;
 
 export const socials = [
